@@ -1,10 +1,9 @@
 # PGEv2_Extensions
 olcPGEX extenstions that I find useful and I think might be useful to others
-#
 
 
 olcPGEX_ResourceManager.h
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 Using lots of decals in your project?  Need to reference them outside your main class?
 If so, you can use this very simple (single function) extension to keep them organised
@@ -15,17 +14,17 @@ Check the comments at the top of the header file for more detailed info...
 
 
 olcPGEX_Camera2D.h
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Quickly add smooth camera scrolling to your 2D games with this simple extension.  Aside
 from smooth scrolling, it also offers smooth boundary clamping as well.
 
-Check the comments at the top of the head file for some example code and more detailed
+Check the comments at the top of the header file for some example code and more detailed
 info...
 
 
 olcPGEX_Animator2D.h
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 Animation can be the most tedious and difficult part of creating games, and as a result
 can deter a lot of people early on in project development.  This extension allows for
