@@ -3,7 +3,7 @@ olcPGEX extenstions that I find useful and I think might be useful to others
 
 You can see a short demo of them all in use here: https://youtu.be/6bDGzZmgyP8
 
-Also a specific demo just for the animaotor here: https://youtu.be/TffYO8NZ104 
+Also a specific demo just for the animator here: https://youtu.be/TffYO8NZ104 
 
 
 olcPGEX_ResourceManager.h
