@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                Animator2D - v1.0							  |
+	|                Animator2D - v1.1							  |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -37,13 +37,13 @@
 	Each animation can be set to either horizontal (default) or vertical frame
 	animation, however each frame must be an equal distance apart.
 
-	Recommend using it with my olcPGEX_Resource_Manager extension to ensure no
+	Recommend using it with my olcPGEX_ResourceManager extension to ensure no
 	duplicate image files get loaded unnecessarily.  It can get messy when
 	animating mulitples of the same object in game.
 
+
 	How Does It Work?
 	~~~~~~~~~~~~~~~~~
-
 	This olcPGEX_Animator2D is an Animator Controller.  In other words
 	it holds the animations for 'this' object and controls when they play,
 	stop, restart, loop, end, etc...
@@ -64,7 +64,7 @@
 
 
 			// Add an animation called "GiveItAName" which plays for a duration of 1/3 of a second, and has 6 frames
-			// of animation which are 100 pixels by 100 pixels each starting at the top left of the image file...
+			// of animation which are 100 pixels by 100 pixels each, starting at the top left of the image file...
 
 			animator.AddAnimation("GiveItAName", 0.3334f, 6, decSpriteSheet, { 0.0f, 0.0f }, { 100.0f, 100.0f });
 
@@ -87,7 +87,7 @@
 
 
 			// You can use the Stop and StopAll functions which are self explanatory.  Here you can specify
-			// whether to stop after the animation has finished, or immediately
+			// whether to stop after the animation has finished, or immediately...
 
 			animator.Stop("GiveItAName", true);
 			animator.StopAll();
@@ -101,6 +101,19 @@
 
 	Hopefully this extension will be helpful to others wishing to quickly add
 	some animation to their project...
+
+
+
+	-----------------------
+	  v1.1 - NEW FEATURES  
+	-----------------------
+
+	Added ability to set an animation to 'Play Next' after current animation
+	is told to Stop.
+
+	Added 'PlayAfterSeconds' function which allows the playing of a given
+	animation to be delayed by a set amount of time.
+
 
 
 	License (OLC-3)
@@ -151,9 +164,11 @@ public:
 	struct Animation
 	{
 		std::string strName = "";
+		std::string strPlayNext = ""; // v1.1
 
 		bool bIsPlaying = false;
 		bool bStopAfterComplete = false;
+		bool bStopNextAfterComplete = false; // v1.1
 		bool bBillboardAnimation = false;
 
 		float fDuration = -1.0f;
@@ -161,6 +176,7 @@ public:
 		float fFrameLength = 0.0f;
 		int nCurrentFrame = 0;
 		float fFrameTick = 0.0f;
+		float fPlayAfterSeconds = 0.0f; // v1.1
 
 		olc::vf2d vecFramePos;
 		olc::vf2d vecFrameSize;
@@ -173,7 +189,7 @@ public:
 	};
 
 private:
-	std::list<Animation> anims;
+	std::vector<Animation> anims;
 
 public:
 	std::string errorMessage = ""; // you can access the last recorded error message from your parent classes in order to troubleshoot animation errors
@@ -190,9 +206,11 @@ public:
 	inline void AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true);
 	
 
+	inline void SetNextAnimation(std::string animName, std::string nextAnimName, bool bPlayOnce = false); // v1.1
 	inline Animation* GetAnim(std::string name);
 
 	inline void Play(std::string name, bool bPlayOnce = false, int startFrame = 0);
+	inline void PlayAfterSeconds(std::string name, float seconds, bool bPlayOnce = false, int startFrame = 0); // v1.1
 	inline void Stop(std::string name, bool bAfterCompletion = false);
 	inline void StopAll();
 	inline void UpdateAnimations(float fElapsedTime);
@@ -285,6 +303,20 @@ void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float durat
 	anims.push_back(newAnim);
 }
 
+void olcPGEX_Animator2D::SetNextAnimation(std::string animName, std::string nextAnimName, bool bPlayOnce)
+{
+	for (auto& a : anims)
+		if (a.strName == animName)
+		{
+			a.strPlayNext = nextAnimName;
+			a.bStopNextAfterComplete = bPlayOnce;
+		}
+
+	return;
+
+	errorMessage = "Animation (" + animName + ") - not a valid animation name... [SetNextAnimation]";
+}
+
 olcPGEX_Animator2D::Animation* olcPGEX_Animator2D::GetAnim(std::string name)
 {
 	for (auto& a : anims)
@@ -299,17 +331,41 @@ void olcPGEX_Animator2D::Play(std::string name, bool bPlayOnce, int startFrame)
 	for (auto& a : anims)
 		if (a.strName == name)
 		{
-			// Prevent starting on an invalid frame
-			a.nCurrentFrame = startFrame < a.nNumberOfFrames ? startFrame : 0;
-
 			a.bIsPlaying = true;
-			a.bStopAfterComplete = bPlayOnce;
+
+			// Prevent starting on an invalid frame
+			if (a.fPlayAfterSeconds == -1.0f)
+			{
+				if (a.nCurrentFrame > a.nNumberOfFrames) a.nCurrentFrame = 0;
+				a.fPlayAfterSeconds = 0.0f;
+			}
+			else
+			{
+				a.nCurrentFrame = startFrame < a.nNumberOfFrames ? startFrame : 0;
+				a.bStopAfterComplete = bPlayOnce;
+			}
+
 			a.fFrameTick = 0.0f;
 
 			return;
 		}
 
 	errorMessage = "Unable to play animation (" + name + ") - not a valid animation name... [Play]";
+}
+
+void olcPGEX_Animator2D::PlayAfterSeconds(std::string name, float seconds, bool bPlayOnce, int startFrame)
+{
+	for (auto& a : anims)
+		if (a.strName == name)
+		{
+			a.fPlayAfterSeconds = seconds;
+			a.nCurrentFrame = startFrame < a.nNumberOfFrames ? startFrame : 0;
+			a.bStopAfterComplete = bPlayOnce;
+		}
+
+	return;
+
+	errorMessage = "Unable to play animation (" + name + ") - not a valid animation name... [PlayAfterSeconds]";
 }
 
 void olcPGEX_Animator2D::Stop(std::string name, bool bAfterCompletion)
@@ -325,6 +381,9 @@ void olcPGEX_Animator2D::Stop(std::string name, bool bAfterCompletion)
 			else
 			{
 				a.bIsPlaying = false;
+				if (a.strPlayNext != "")
+					Play(a.strPlayNext, a.bStopNextAfterComplete);
+
 				return;
 			}
 		}
@@ -341,6 +400,17 @@ void olcPGEX_Animator2D::StopAll()
 void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 {
 	for (auto& a : anims)
+	{
+		if (a.fPlayAfterSeconds > 0.0f)
+		{
+			a.fPlayAfterSeconds -= fElapsedTime;
+			if (a.fPlayAfterSeconds <= 0.0f)
+			{
+				a.fPlayAfterSeconds = -1.0f; // Tell the play function to use existing Play presets from previous call...
+				Play(a.strName);
+			}
+		}
+
 		if (a.bIsPlaying && a.fDuration >= 0.0f)
 		{
 			a.fFrameTick += fElapsedTime;
@@ -352,10 +422,15 @@ void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 				{
 					a.nCurrentFrame = 0;
 					if (a.bStopAfterComplete)
+					{
 						a.bIsPlaying = false;
+						if (a.strPlayNext != "")
+							Play(a.strPlayNext, a.bStopNextAfterComplete);
+					}
 				}
 			}
 		}
+	}
 }
 
 void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
