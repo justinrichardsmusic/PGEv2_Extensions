@@ -6,6 +6,14 @@ You can see a short demo of them all in use here: https://youtu.be/6bDGzZmgyP8
 Also a specific demo just for the animator here: https://youtu.be/TffYO8NZ104 
 
 
+olcPGEX_SplashScreen.h
+----------------------
+
+Self explanatory really... Easily display a smoothly animated olc::PixelGameEngine
+logo at the beginning of ANY pixel game engine project with a measly 3 lines of code
+
+Check the comments at the top of the header file for a simple demo implementation...
+
 olcPGEX_ResourceManager.h
 -------------------------
 
