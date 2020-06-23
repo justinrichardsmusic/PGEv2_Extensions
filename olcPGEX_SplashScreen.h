@@ -103,7 +103,7 @@ private:
 	olc::Pixel pDefaultColour = olc::WHITE;
 
 	float fAlpha = 0.0f;
-	float fTotalDuration = 4.0f;
+	float fTotalDuration = 3.0f;
 	float fFadeDuration;
 	float fAnimationCounter = 0.0f;
 	float fTextOffset = 0.0f;
@@ -126,6 +126,9 @@ public:
 
 bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 {
+	// Don't run any logic if the splash screen is complete
+	if (nSplashScreenState == SS_COMPLETE) return false;
+
 	// Clear screen to desired background colour and increment the counter
 	pge->Clear(pBackGroundColour);
 	fAnimationCounter += fElapsedTime;
@@ -158,7 +161,7 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 	case SS_PRE_FADE_IN:
 	{
 		// Pause for 1 second before starting to fade in...
-		if (fAnimationCounter >= 2.0f)
+		if (fAnimationCounter >= 1.5f)
 		{
 			fAnimationCounter = 0.0f;
 			nNextSplashScreenState = SS_FADE_IN;
@@ -178,8 +181,8 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 
 		pge->DrawString(vecPGEPos, strNameSpace, pNameSpaceColour, nScale);
 		pge->DrawString(vecPGEPos, strPGE, pPGEColour, nScale);
-		pge->DrawString(olc::vf2d { vecMadeWithPos.x + fTextOffset, vecMadeWithPos.y }, strMadeWith, pDefaultColour, nPartialScale);
-		pge->DrawString(olc::vf2d { vecOneLoneCoderPos.x - fTextOffset, vecOneLoneCoderPos.y }, strOneLoneCoder, pDefaultColour, nPartialScale);
+		pge->DrawString(olc::vf2d{ vecMadeWithPos.x + fTextOffset, vecMadeWithPos.y }, strMadeWith, pDefaultColour, nPartialScale);
+		pge->DrawString(olc::vf2d{ vecOneLoneCoderPos.x - fTextOffset, vecOneLoneCoderPos.y }, strOneLoneCoder, pDefaultColour, nPartialScale);
 
 		if (fAnimationCounter >= fFadeDuration)
 			nNextSplashScreenState = SS_DISPLAY;
@@ -219,14 +222,9 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 
 	} break;
 
-	case SS_COMPLETE:
-	{
-		// Nothing left to do... return false to continue execution of the update loop
-		return false;
-	} break;
-
 	default:
 	{
+
 		return false;
 	} break;
 
