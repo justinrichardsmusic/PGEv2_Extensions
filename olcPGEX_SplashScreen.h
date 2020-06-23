@@ -120,7 +120,7 @@ private:
 	olc::vf2d vecMiddleScreenPos;
 
 public:
-	bool AnimateSplashScreen(float fElapsedTime);
+	inline bool AnimateSplashScreen(float fElapsedTime);
 
 };
 
