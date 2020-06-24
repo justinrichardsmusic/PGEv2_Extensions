@@ -14,6 +14,9 @@ logo at the beginning of ANY pixel game engine project with a measly 3 lines of 
 
 Check the comments at the top of the header file for a simple demo implementation...
 
+A short visual demonstration is available here:
+https://youtu.be/h1rgw5Nom3c
+
 olcPGEX_ResourceManager.h
 -------------------------
 
