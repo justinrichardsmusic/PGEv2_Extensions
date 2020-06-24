@@ -3,12 +3,14 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                SplashScreen - v1.0				          |
+	|                SplashScreen - v1.0		              |
 	+-------------------------------------------------------------+
 
 	What is this?
 	~~~~~~~~~~~~~
 	This is an extension to the olcPixelGameEngine v1.0 and above.
+	(Verified with version 2.06, but should be backwards compatible)
+	
 	It will allow you to display a short splash screen animation
 	at the beginning of your program to help fulfill licensing
 	requirements should you choose to release your project into
@@ -18,14 +20,25 @@
 	
 	1) Include the header in your main class (after the
 	   olcPixelGameEngine is included)
+	   
+	   #include "olcPixelGameEngine.h"
+	   #include "olcPGEX_SplashScreen.h"
 
 	2) Declare an instance of the extension at the top of your
 	   main class
+	   
+	   private:
+		olcPGEX_SplashScreen splashScreen;
 
 	3) Call the AnimateSplashScreen function from OnUserUpdate using
 	   the method shown below:
 
-	   if (splashScreen.AnimateSplashScreen) return true;
+	   bool OnUserUpdate(float fElaspedTime) override
+	   {
+	   	if (splashScreen.AnimateSplashScreen) return true;
+		
+		// the rest of your game code here...
+	   }
 
 	   ...assuming you called your instance of the extension
 	   "splashScreen" that is...
@@ -95,28 +108,32 @@ private:
 	} 
 	nSplashScreenState = SS_INIT, nNextSplashScreenState = SS_INIT;
 
+	// Default values - change these to suit your tastes...
 	int nScale = 4;
 	int nPartialScale = 2;
+	
 	olc::Pixel pBackGroundColour = olc::Pixel(0, 0, 0, 255);
 	olc::Pixel pPGEColour = olc::Pixel(255, 191, 0, 255);
 	olc::Pixel pNameSpaceColour = olc::Pixel(95, 0, 191, 255);
 	olc::Pixel pDefaultColour = olc::WHITE;
 
+	// Animation Variables
 	float fAlpha = 0.0f;
 	float fTotalDuration = 3.0f;
 	float fFadeDuration;
 	float fAnimationCounter = 0.0f;
 	float fTextOffset = 0.0f;
 
+	// Text variables
 	std::string strMadeWith = "made with";
 	std::string strPGE =       "olc  PixelGameEngine";
 	std::string strNameSpace = "   ::";
 	std::string strOneLoneCoder = "OneLoneCoder.com";
 
+	// Position variables
 	olc::vf2d vecMadeWithPos;
 	olc::vf2d vecPGEPos;
 	olc::vf2d vecOneLoneCoderPos;
-
 	olc::vf2d vecMiddleScreenPos;
 
 public:
@@ -129,7 +146,7 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 	// Don't run any logic if the splash screen is complete
 	if (nSplashScreenState == SS_COMPLETE) return false;
 
-	// Clear screen to desired background colour and increment the counter
+	// Clear screen to desired background colour, increment the counter and calculate the current text offset position
 	pge->Clear(pBackGroundColour);
 	fAnimationCounter += fElapsedTime;
 	fTextOffset = fAnimationCounter * (float)nScale * 4.0f;
@@ -151,7 +168,7 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 		vecMadeWithPos = { vecPGEPos.x - (8 * nPartialScale * 4), vecPGEPos.y - (8 * nPartialScale) - (nPartialScale / 2) };
 		vecOneLoneCoderPos = { vecPGEPos.x + (8 * nScale * 20) - (8 * nPartialScale * 12), vecPGEPos.y + (8 * nScale) + (8 * (nPartialScale / 2)) };
 
-		// Calculated the fade duration based on the total duration
+		// Calculate the fade duration based on the total duration
 		fFadeDuration = fTotalDuration / 4.0f;
 
 		nNextSplashScreenState = SS_PRE_FADE_IN;
@@ -160,7 +177,8 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 
 	case SS_PRE_FADE_IN:
 	{
-		// Pause for 1 second before starting to fade in...
+		// Pause for a period at the beginning so the window has a chance to initialise
+		// 1.5 seconds by default, change to 0.0f if you don't require a pre fade in delay
 		if (fAnimationCounter >= 1.5f)
 		{
 			fAnimationCounter = 0.0f;
