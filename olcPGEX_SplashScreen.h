@@ -35,7 +35,7 @@
 
 	   bool OnUserUpdate(float fElaspedTime) override
 	   {
-	   	if (splashScreen.AnimateSplashScreen) return true;
+	   	if (splashScreen.AnimateSplashScreen(fElaspedTime)) return true;
 		
 		// the rest of your game code here...
 	   }
