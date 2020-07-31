@@ -38,6 +38,21 @@ Check the comments at the top of the header file for some example code and more 
 info...
 
 
+olcPGEX_RayCast2D.h
+-------------------
+
+Need raycasting for your 2D game?  I did, so I made this extension for others to use as
+well.
+
+All you need to use this ray caster are the beginning and end points along 2 lines
+that you wish to check for intersection.  It returns a boolean collision value and also
+the pixel location on screen of where the collision occured as well as the distance along
+the ray so you can calculate which collision is closest.
+
+Check the comments at the top of the header file for some example code and more detailed
+info...
+
+
 olcPGEX_Animator2D.h
 --------------------
 
