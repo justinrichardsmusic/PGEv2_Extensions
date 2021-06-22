@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                SplashScreen - v1.1				          |
+	|                SplashScreen - v1.1			      |
 	+-------------------------------------------------------------+
 
 	What is this?
