@@ -3,14 +3,12 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                SplashScreen - v1.0		              |
+	|                SplashScreen - v1.1				          |
 	+-------------------------------------------------------------+
 
 	What is this?
 	~~~~~~~~~~~~~
 	This is an extension to the olcPixelGameEngine v1.0 and above.
-	(Verified with version 2.06, but should be backwards compatible)
-	
 	It will allow you to display a short splash screen animation
 	at the beginning of your program to help fulfill licensing
 	requirements should you choose to release your project into
@@ -20,25 +18,14 @@
 	
 	1) Include the header in your main class (after the
 	   olcPixelGameEngine is included)
-	   
-	   #include "olcPixelGameEngine.h"
-	   #include "olcPGEX_SplashScreen.h"
 
 	2) Declare an instance of the extension at the top of your
 	   main class
-	   
-	   private:
-		olcPGEX_SplashScreen splashScreen;
 
 	3) Call the AnimateSplashScreen function from OnUserUpdate using
 	   the method shown below:
 
-	   bool OnUserUpdate(float fElaspedTime) override
-	   {
-	   	if (splashScreen.AnimateSplashScreen(fElaspedTime)) return true;
-		
-		// the rest of your game code here...
-	   }
+	   if (splashScreen.AnimateSplashScreen(fElapsedTime)) return true;
 
 	   ...assuming you called your instance of the extension
 	   "splashScreen" that is...
@@ -48,9 +35,29 @@
 	   animation is playing, which will skip the rest of your game
 	   code whilst this is happening... Simple.
 
-	I needed a splash screen for my game and I assume others will
+	   OPTIONAL: You can adjust the parameters of the Splash Screen
+	   using the SetOptions function in OnUserCreate like so...
+
+	   splashScreen.SetOptions(2, 1, 6.0f, 2.0f, olc::WHITE, olc::BLUE, olc::DARK_GREY, olc::BLACK);
+
+	   (the above example will set the colours, duration, delay, etc to
+	    values that are different from the standard implementation)
+
+
+	I needed a splash screen for my games and I assume others will
 	eventually need one to, so I wrapped it up in an extension for
 	others to make use of as well :-)
+
+
+	---------------------
+	  v1.1 NEW FEATURES
+	---------------------
+
+	Ability to set the parameters of the Splash Screen using an
+	initialisation function, instead of having to modify the
+	header file directly...
+
+
 
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
@@ -97,7 +104,7 @@
 class olcPGEX_SplashScreen : public olc::PGEX
 {
 private:
-	enum SS_State
+	enum class SS_State
 	{
 		SS_INIT,
 		SS_PRE_FADE_IN,
@@ -106,54 +113,68 @@ private:
 		SS_FADE_OUT,
 		SS_COMPLETE
 	} 
-	nSplashScreenState = SS_INIT, nNextSplashScreenState = SS_INIT;
+	nSplashScreenState = SS_State::SS_INIT, nNextSplashScreenState = SS_State::SS_INIT;
 
-	// Default values - change these to suit your tastes...
 	int nScale = 4;
 	int nPartialScale = 2;
-	
-	olc::Pixel pBackGroundColour = olc::Pixel(0, 0, 0, 255);
-	olc::Pixel pPGEColour = olc::Pixel(255, 191, 0, 255);
-	olc::Pixel pNameSpaceColour = olc::Pixel(95, 0, 191, 255);
-	olc::Pixel pDefaultColour = olc::WHITE;
+	olc::Pixel pBackGroundColour = olc::Pixel(0, 0, 0, 255);	// default olc::Pixel(0, 0, 0, 255)
+	olc::Pixel pPGEColour = olc::Pixel(255, 0, 0, 255);			// default olc::Pixel(255, 191, 0, 255)
+	olc::Pixel pNameSpaceColour = olc::Pixel(127, 0, 0, 255);	// default olc::Pixel(95, 0, 191, 255)
+	olc::Pixel pDefaultColour = olc::WHITE;						// default olc::WHITE
 
-	// Animation Variables
 	float fAlpha = 0.0f;
-	float fTotalDuration = 3.0f;
-	float fFadeDuration;
+	float fTotalDuration = 2.0f;
+	float fFadeDuration = 1.0f;
 	float fAnimationCounter = 0.0f;
 	float fTextOffset = 0.0f;
+	float fInitialDelay = 1.5f;  // v1.1
 
-	// Text variables
 	std::string strMadeWith = "made with";
 	std::string strPGE =       "olc  PixelGameEngine";
 	std::string strNameSpace = "   ::";
 	std::string strOneLoneCoder = "OneLoneCoder.com";
 
-	// Position variables
 	olc::vf2d vecMadeWithPos;
 	olc::vf2d vecPGEPos;
 	olc::vf2d vecOneLoneCoderPos;
+
 	olc::vf2d vecMiddleScreenPos;
 
 public:
+	// Optional function to modify the standard splash screen parameters - v1.1
+	inline void SetOptions(int scale, int partialScale, float totalDuration, float initialDelay, olc::Pixel backGroundColour, olc::Pixel PGEColour, olc::Pixel nameSpaceColour, olc::Pixel defaultColour);
+	
+	// The main function that will display the splash screen
 	inline bool AnimateSplashScreen(float fElapsedTime);
 
 };
 
+void olcPGEX_SplashScreen::SetOptions(int scale, int partialScale, float totalDuration, float initialDelay, olc::Pixel backGroundColour, olc::Pixel PGEColour, olc::Pixel nameSpaceColour, olc::Pixel defaultColour)
+{
+	nScale = scale;
+	nPartialScale = partialScale;
+	fTotalDuration = totalDuration;
+	fInitialDelay = initialDelay;
+
+	pBackGroundColour = backGroundColour;
+	pPGEColour = PGEColour;
+	pNameSpaceColour = nameSpaceColour;
+	pDefaultColour = defaultColour;
+}
+
 bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 {
 	// Don't run any logic if the splash screen is complete
-	if (nSplashScreenState == SS_COMPLETE) return false;
+	if (nSplashScreenState == SS_State::SS_COMPLETE) return false;
 
-	// Clear screen to desired background colour, increment the counter and calculate the current text offset position
+	// Clear screen to desired background colour and increment the counter
 	pge->Clear(pBackGroundColour);
 	fAnimationCounter += fElapsedTime;
 	fTextOffset = fAnimationCounter * (float)nScale * 4.0f;
 
 	switch (nSplashScreenState)
 	{
-	case SS_INIT:
+	case SS_State::SS_INIT:
 	{
 		// Prevent invalid scale size
 		if (nScale < 1) nScale = 1;
@@ -168,26 +189,25 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 		vecMadeWithPos = { vecPGEPos.x - (8 * nPartialScale * 4), vecPGEPos.y - (8 * nPartialScale) - (nPartialScale / 2) };
 		vecOneLoneCoderPos = { vecPGEPos.x + (8 * nScale * 20) - (8 * nPartialScale * 12), vecPGEPos.y + (8 * nScale) + (8 * (nPartialScale / 2)) };
 
-		// Calculate the fade duration based on the total duration
+		// Calculated the fade duration based on the total duration
 		fFadeDuration = fTotalDuration / 4.0f;
 
-		nNextSplashScreenState = SS_PRE_FADE_IN;
+		nNextSplashScreenState = SS_State::SS_PRE_FADE_IN;
 
 	} break;
 
-	case SS_PRE_FADE_IN:
+	case SS_State::SS_PRE_FADE_IN:
 	{
-		// Pause for a period at the beginning so the window has a chance to initialise
-		// 1.5 seconds by default, change to 0.0f if you don't require a pre fade in delay
-		if (fAnimationCounter >= 1.5f)
+		// Pause for a small period before starting to fade in...  // useful if program lags at start up (ie. switch to full screen mode, etc)
+		if (fAnimationCounter >= fInitialDelay)
 		{
 			fAnimationCounter = 0.0f;
-			nNextSplashScreenState = SS_FADE_IN;
+			nNextSplashScreenState = SS_State::SS_FADE_IN;
 		}
 
 	} break;
 
-	case SS_FADE_IN:
+	case SS_State::SS_FADE_IN:
 	{
 		// Lerp the alpha values and display the text
 		fAlpha += (255.0f / fFadeDuration) * fElapsedTime;
@@ -203,11 +223,11 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 		pge->DrawString(olc::vf2d{ vecOneLoneCoderPos.x - fTextOffset, vecOneLoneCoderPos.y }, strOneLoneCoder, pDefaultColour, nPartialScale);
 
 		if (fAnimationCounter >= fFadeDuration)
-			nNextSplashScreenState = SS_DISPLAY;
+			nNextSplashScreenState = SS_State::SS_DISPLAY;
 
 	} break;
 
-	case SS_DISPLAY:
+	case SS_State::SS_DISPLAY:
 	{
 		// Display the text with no transparency
 		pge->DrawString(vecPGEPos, strNameSpace, pNameSpaceColour, nScale);
@@ -216,11 +236,11 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 		pge->DrawString(olc::vf2d{ vecOneLoneCoderPos.x - fTextOffset, vecOneLoneCoderPos.y }, strOneLoneCoder, pDefaultColour, nPartialScale);
 
 		if (fAnimationCounter >= fTotalDuration - fFadeDuration)
-			nNextSplashScreenState = SS_FADE_OUT;
+			nNextSplashScreenState = SS_State::SS_FADE_OUT;
 
 	} break;
 
-	case SS_FADE_OUT:
+	case SS_State::SS_FADE_OUT:
 	{
 		// Lerp the alpha back down to clear and display the text
 		fAlpha -= (255.0f / fFadeDuration) * fElapsedTime;
@@ -236,7 +256,7 @@ bool olcPGEX_SplashScreen::AnimateSplashScreen(float fElapsedTime)
 		pge->DrawString(olc::vf2d{ vecOneLoneCoderPos.x - fTextOffset, vecOneLoneCoderPos.y }, strOneLoneCoder, pDefaultColour, nPartialScale);
 
 		if (fAnimationCounter >= fTotalDuration)
-			nNextSplashScreenState = SS_COMPLETE;
+			nNextSplashScreenState = SS_State::SS_COMPLETE;
 
 	} break;
 
