@@ -513,8 +513,8 @@ void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
 			if (a.bBillboardAnimation)
 			{
 				// translate pos based on rotation around origin
-				float s = sinf(angle);
-				float c = cosf(angle);
+				float s = angle = 0.0f ? 0.0f : sinf(angle);
+				float c = angle = 0.0f ? 1.0f : cosf(angle);
 
 				olc::vf2d vecBillboardPos;
 
