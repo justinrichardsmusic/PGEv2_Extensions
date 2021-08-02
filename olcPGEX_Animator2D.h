@@ -9,7 +9,7 @@
 	What is this?
 	~~~~~~~~~~~~~
 	This is an extension to the olcPixelGameEngine v2.0 and above.
-	
+
 	Its purpose is to allow quick and simple animation initialisation
 	as well as ease of use with regards to playing, stopping, triggering
 	and asignment to game objects.
@@ -109,7 +109,7 @@
 
 
 	-----------------------
-	  v1.1 - NEW FEATURES  
+	  v1.1 - NEW FEATURES
 	-----------------------
 
 	Added ability to set an animation to 'Play Next' after current animation
@@ -222,16 +222,16 @@ public:
 	std::string errorMessage = ""; // you can access the last recorded error message from your parent classes in order to troubleshoot animation errors
 
 	// Add a standard animation that can rotate around an origin (default)
-	inline void AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin = { 0.0f, 0.0f }, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 1.0f, 1.0f });
+	inline void AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin = { 0.0f, 0.0f }, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
 
 
 	// Add an animation that does not play by default, used for manually switching between frames on demand (ie switching between items on a HUD...)
-	inline void AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 1.0f, 1.0f });
+	inline void AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
 
 
 	// Add an animation that can rotate around an origin, but will always display upright (ie particle effects, flame, etc...)
 	inline void AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
-	
+
 
 	inline void SetNextAnimation(std::string animName, std::string nextAnimName, bool bPlayOnce = false); // v1.1
 	inline Animation* GetAnim(std::string name);
@@ -267,9 +267,9 @@ void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int 
 	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d( -frameSize.x, 0.0f ) : olc::vf2d( frameSize.x, 0.0f );
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
 	else
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d( 0.0f, -frameSize.y ) : olc::vf2d( 0.0f, frameSize.y );
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
 
 	newAnim.vecFrameDisplayOffset = frameDisplayOffset;
 	newAnim.vecOrigin = origin;
@@ -528,7 +528,7 @@ void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
 				pge->DrawPartialDecal(pos + vecBillboardPos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
 			}
 			else
-				pge->DrawPartialRotatedDecal(pos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
+				pge->DrawPartialRotatedDecal(pos, a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
 		}
 }
 
@@ -545,4 +545,3 @@ bool olcPGEX_Animator2D::DuplicateAnimationExists(std::string name)
 }
 
 #endif
-
