@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                Animator2D - v1.2			      |
+	|                Animator2D - v1.2							  |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -128,6 +128,17 @@
 	Added ability to play flipped animations
 
 
+
+	-----------------------
+	  v1.3 - NEW FEATURES
+	-----------------------
+
+	Renamed "Flipped" animations to "PlayInReverse" as they do just that and
+	don't actually flip the image in any way... still useful to play animations
+	backwards...
+
+	Added MirroredImage as an option (proper flipping along either (or both) axis)...
+
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
 
@@ -182,7 +193,7 @@ public:
 		bool bStopAfterComplete = false;
 		bool bStopNextAfterComplete = false; // v1.1
 		bool bBillboardAnimation = false;
-		bool bFlipped = false; // v1.2
+		bool bPlayInReverse = false; // v1.2 (updated v1.3)
 		bool bPingPong = false; // v1.2
 
 		float fDuration = -1.0f;
@@ -199,6 +210,7 @@ public:
 		olc::vf2d vecFrameDisplayOffset = { 0.0f, 0.0f };
 		olc::vf2d vecOrigin = { 0.0f, 0.0f };
 		olc::vf2d vecNoRotationPos = { 0.0f, 0.0f };
+		olc::vf2d vecMirrorImage = { 0.0f, 0.0f }; // v1.3 - set either axis or both to -1.0f to mirror the sprite image
 
 		olc::Decal* decAnimDecal = nullptr;
 	};
@@ -210,15 +222,15 @@ public:
 	std::string errorMessage = ""; // you can access the last recorded error message from your parent classes in order to troubleshoot animation errors
 
 	// Add a standard animation that can rotate around an origin (default)
-	inline void AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin = { 0.0f, 0.0f }, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool flipped = false, bool pingpong = false);
+	inline void AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin = { 0.0f, 0.0f }, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 1.0f, 1.0f });
 
 
 	// Add an animation that does not play by default, used for manually switching between frames on demand (ie switching between items on a HUD...)
-	inline void AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite = true, bool flipped = false, bool pingpong = false);
+	inline void AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 1.0f, 1.0f });
 
 
 	// Add an animation that can rotate around an origin, but will always display upright (ie particle effects, flame, etc...)
-	inline void AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool flipped = false, bool pingpong = false);
+	inline void AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
 	
 
 	inline void SetNextAnimation(std::string animName, std::string nextAnimName, bool bPlayOnce = false); // v1.1
@@ -237,7 +249,7 @@ private:
 	inline bool DuplicateAnimationExists(std::string name);
 };
 
-void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool flipped, bool pingpong)
+void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
 {
 	// Prevent multiple animations with the same name
 	if (!DuplicateAnimationExists(animName)) return;
@@ -252,22 +264,23 @@ void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int 
 
 	newAnim.vecFramePos = firstFramePos;
 	newAnim.vecFrameSize = frameSize;
-	newAnim.bFlipped = flipped;
+	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bFlipped ? olc::vf2d( -frameSize.x, 0.0f ) : olc::vf2d( frameSize.x, 0.0f );
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d( -frameSize.x, 0.0f ) : olc::vf2d( frameSize.x, 0.0f );
 	else
-		newAnim.vecNextFrameOffset = newAnim.bFlipped ? olc::vf2d( 0.0f, -frameSize.y ) : olc::vf2d( 0.0f, frameSize.y );
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d( 0.0f, -frameSize.y ) : olc::vf2d( 0.0f, frameSize.y );
 
 	newAnim.vecFrameDisplayOffset = frameDisplayOffset;
 	newAnim.vecOrigin = origin;
 	newAnim.decAnimDecal = decal;
 	newAnim.bPingPong = pingpong;
+	newAnim.vecMirrorImage = mirrorImage;
 
 	anims.push_back(newAnim);
 }
 
-void olcPGEX_Animator2D::AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite, bool flipped, bool pingpong)
+void olcPGEX_Animator2D::AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
 {
 	// Prevent multiple animations with the same name
 	if (!DuplicateAnimationExists(animName)) return;
@@ -280,22 +293,23 @@ void olcPGEX_Animator2D::AddStaticAnimation(std::string animName, int numFrames,
 
 	newAnim.vecFramePos = firstFramePos;
 	newAnim.vecFrameSize = frameSize;
-	newAnim.bFlipped = flipped;
+	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bFlipped ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
 	else
-		newAnim.vecNextFrameOffset = newAnim.bFlipped ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
 
 
 	newAnim.vecNextFrameOffset = nextFrameOffset;
 	newAnim.decAnimDecal = decal;
 	newAnim.bPingPong = pingpong;
+	newAnim.vecMirrorImage = mirrorImage;
 
 	anims.push_back(newAnim);
 }
 
-void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool flipped, bool pingpong)
+void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
 {
 	// Prevent multiple animations with the same name
 	if (!DuplicateAnimationExists(animName)) return;
@@ -310,18 +324,19 @@ void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float durat
 
 	newAnim.vecFramePos = firstFramePos;
 	newAnim.vecFrameSize = frameSize;
-	newAnim.bFlipped = flipped;
+	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bFlipped ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
 	else
-		newAnim.vecNextFrameOffset = newAnim.bFlipped ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
+		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
 
 	newAnim.vecFrameDisplayOffset = frameDisplayOffset;
 	newAnim.decAnimDecal = decal;
 
 	newAnim.bBillboardAnimation = true;
 	newAnim.bPingPong = pingpong;
+	newAnim.vecMirrorImage = mirrorImage;
 
 	anims.push_back(newAnim);
 }
@@ -510,10 +525,10 @@ void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
 				vecBillboardPos.x -= a.vecFrameSize.x * 0.5f;
 				vecBillboardPos.y -= a.vecFrameSize.y;
 
-				pge->DrawPartialDecal(pos + vecBillboardPos, a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize);
+				pge->DrawPartialDecal(pos + vecBillboardPos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
 			}
 			else
-				pge->DrawPartialRotatedDecal(pos, a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize);
+				pge->DrawPartialRotatedDecal(pos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
 		}
 }
 
