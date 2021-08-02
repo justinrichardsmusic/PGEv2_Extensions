@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                ResourceManager - v1.0				          |
+	|                ResourceManager - v1.1				          |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -27,6 +27,24 @@
 	It has no "garbage collection" so be wary of using it in loops.
 	Any sprites or decals loaded with this extention under normal usage
 	will be destroyed upon application exit in most operating systems.
+
+
+
+	-----------------------
+	  v1.1 - NEW FEATURES
+	-----------------------
+
+	Added ability to set Sprite IDs when loading images so that string
+	comparision is no longer necessary when checking if a sprite already
+	exists in the list - optional optimisation, the resource manager will
+	still function as expected if simply using strings without IDs
+
+	Added an ERROR string which can be accessed to debug each function
+
+	Added the ability to FREE sprites if the sprite is no longer needed.
+	This can drastically decrease memory usage (GPU usage will not be effected).
+
+
 
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
@@ -75,19 +93,28 @@ class olcPGEX_ResourceManager : public olc::PGEX
 private:
 	struct spriteResource
 	{
-		olc::Sprite* spr;
-		olc::Decal* dec;
-		std::string fileName;
+		olc::Sprite* spr = nullptr;
+		olc::Decal* dec = nullptr;
+		std::string fileName = "";
+		int ID = -1;
 	};
 
-	std::list<spriteResource> resSprites;
+	std::vector<spriteResource> resSprites;
 
 public:
+	std::string strError = "";
+
 	inline olc::Decal* RM_Sprite(std::string spriteFileName);
+	inline olc::Decal* RM_Sprite(int fileNameID, std::string spriteFileName = "");
+
+	inline void RM_FreeSpriteData(std::string spriteFileName);
+	inline void RM_FreeSpriteData(int fileNameID);
 };
 
 olc::Decal* olcPGEX_ResourceManager::RM_Sprite(std::string spriteFileName)
 {
+	strError = "";
+
 	spriteResource resCurrentSprite;
 
 	for (auto& s : resSprites)
@@ -97,11 +124,76 @@ olc::Decal* olcPGEX_ResourceManager::RM_Sprite(std::string spriteFileName)
 	resCurrentSprite.spr = new olc::Sprite(spriteFileName);
 	resCurrentSprite.dec = new olc::Decal(resCurrentSprite.spr);
 	resCurrentSprite.fileName = spriteFileName;
+	resCurrentSprite.ID = resSprites.size() > 0 ? (resSprites.back().ID) + 1 : 0;
 
 	resSprites.push_back(resCurrentSprite);
 
 	return resCurrentSprite.dec;
 }
+
+// Optimised for faster comparison checks - uses ID (eg Enum Class) instead of string comparison
+olc::Decal* olcPGEX_ResourceManager::RM_Sprite(int fileNameID, std::string spriteFileName)
+{
+	strError = "";
+
+	spriteResource resCurrentSprite;
+
+	// Optimised comparison check
+	for (auto& s : resSprites)
+		if (s.ID == fileNameID)
+			return s.dec;
+
+	// Allow for error checking if duplicate fileNameID exists
+	if (resSprites.size() > 0)
+		strError = fileNameID <= resSprites.back().ID ? "ERROR: RM_Sprite - fileNameID duplicate" : "";
+
+
+	resCurrentSprite.spr = new olc::Sprite(spriteFileName);
+	resCurrentSprite.dec = new olc::Decal(resCurrentSprite.spr);
+	resCurrentSprite.fileName = spriteFileName;
+	resCurrentSprite.ID = fileNameID;
+
+	resSprites.push_back(resCurrentSprite);
+
+	return resCurrentSprite.dec;
+}
+
+void olcPGEX_ResourceManager::RM_FreeSpriteData(std::string spriteFileName)
+{
+	strError = "";
+
+	for (auto& s : resSprites)
+		if (s.fileName == spriteFileName)
+		{
+			if (s.spr == nullptr)
+				strError = "ERROR: RM_FreeSpriteData - Sprite Data Not Found";
+			else
+				s.spr->~Sprite();
+
+			return;
+		}
+
+	strError = "ERROR: RM_FreeSpriteData - Sprite File Name Not Found";
+}
+
+void olcPGEX_ResourceManager::RM_FreeSpriteData(int fileNameID)
+{
+	strError = "";
+
+	for (auto& s : resSprites)
+		if (s.ID == fileNameID)
+		{
+			if (s.spr == nullptr)
+				strError = "ERROR: RM_FreeSpriteData - Sprite Data Not Found";
+			else
+				s.spr->~Sprite();
+
+			return;
+		}
+
+	strError = "ERROR: RM_FreeSpriteData - Sprite ID Not Found";
+}
+
 
 #endif
 
