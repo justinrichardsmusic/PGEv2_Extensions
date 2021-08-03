@@ -65,9 +65,9 @@ a lot of the complex repetitive code to exist in my main program.
 
 The extension allows you to play lots and lots of animations independently of each other
 in an easy to manage way and offers support for varying speeds, static animation, billboard
-animation, rotation, offsets, and more... Sounds complicated?  No, the usage has been simplified
-so the programmer need not worry about the complexities, just feed in some initial values
-and you're good to go :-)
+animation, rotation, offsets, scaling, tinting, mirroring, reverse playback, ping-pong, and
+more... Sounds complicated?  No, the usage has been simplified so the programmer need not worry
+about the complexities, just feed in some initial values and you're good to go :-)
 
 Simplified it works like this;
 
