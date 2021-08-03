@@ -139,6 +139,20 @@
 
 	Added MirroredImage as an option (proper flipping along either (or both) axis)...
 
+
+
+	-----------------------
+	  v1.4 - NEW FEATURES
+	-----------------------
+
+	Added two new functions ScaleAnimation and TintAnimation.  You can now scale
+	and tint any individual animation in the list of animations on each animator
+	controller.  The scaling will work with rotation around the origin set for the
+	animation which means you don't have to adjust any of these in order to scale
+	a rotated animation :-)
+
+
+
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
 
@@ -211,6 +225,8 @@ public:
 		olc::vf2d vecOrigin = { 0.0f, 0.0f };
 		olc::vf2d vecNoRotationPos = { 0.0f, 0.0f };
 		olc::vf2d vecMirrorImage = { 0.0f, 0.0f }; // v1.3 - set either axis or both to -1.0f to mirror the sprite image
+		olc::vf2d vecScale = { 1.0f, 1.0f }; // v1.4
+		olc::Pixel pTint = olc::WHITE; // v1.4
 
 		olc::Decal* decAnimDecal = nullptr;
 	};
@@ -244,6 +260,9 @@ public:
 	inline void UpdateAnimations(float fElapsedTime);
 
 	inline void DrawAnimationFrame(olc::vf2d pos, float angle = 0.0f);
+
+	inline void ScaleAnimation(std::string animToScale, olc::vf2d scale);
+	inline void TintAnimation(std::string animToTint, olc::Pixel tint);
 
 private:
 	inline bool DuplicateAnimationExists(std::string name);
@@ -522,13 +541,13 @@ void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
 				vecBillboardPos.y = s * a.vecFrameDisplayOffset.x + c * a.vecFrameDisplayOffset.y + a.vecOrigin.y;
 
 				// offset to account for frame size
-				vecBillboardPos.x -= a.vecFrameSize.x * 0.5f;
-				vecBillboardPos.y -= a.vecFrameSize.y;
+				vecBillboardPos.x -= a.vecFrameSize.x * 0.5f * a.vecScale.x;
+				vecBillboardPos.y -= a.vecFrameSize.y * a.vecScale.y;
 
-				pge->DrawPartialDecal(pos + vecBillboardPos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
+				pge->DrawPartialDecal(pos + vecBillboardPos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f * a.vecScale.x : 1.0f * a.vecScale.x, a.vecMirrorImage.y < 0.0f ? -1.0f * a.vecScale.y : 1.0f * a.vecScale.y }, a.pTint);
 			}
 			else
-				pge->DrawPartialRotatedDecal(pos, a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f : 1.0f, a.vecMirrorImage.y < 0.0f ? -1.0f : 1.0f });
+				pge->DrawPartialRotatedDecal(pos, a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset * a.vecScale, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f * a.vecScale.x : 1.0f * a.vecScale.x, a.vecMirrorImage.y < 0.0f ? -1.0f * a.vecScale.y : 1.0f * a.vecScale.y }, a.pTint);
 		}
 }
 
@@ -543,5 +562,16 @@ bool olcPGEX_Animator2D::DuplicateAnimationExists(std::string name)
 
 	return true;
 }
+
+void olcPGEX_Animator2D::ScaleAnimation(std::string animToScale, olc::vf2d scale)
+{
+	auto& a = GetAnim(animToScale)->vecScale = scale;
+}
+
+void olcPGEX_Animator2D::TintAnimation(std::string animToTint , olc::Pixel tint)
+{
+	auto& a = GetAnim(animToTint)->pTint = tint;
+}
+
 
 #endif
