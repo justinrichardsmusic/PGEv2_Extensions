@@ -30,3 +30,11 @@ Setup
 -----
 Now that you have all the required files in your project folder you simply need to
 compile and run and you're good to go!
+
+-----------------------
+
+Optional
+--------
+If you don't like code with lots of comments in it, then you can replace Demo_Main.cpp
+with the Demo_Main_No_Comments.cpp file in the Optional folder.  However, you can't
+include both in the project at the same time...
