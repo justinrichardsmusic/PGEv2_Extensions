@@ -113,14 +113,14 @@ public:
 		{
 		case DEMO_STATE::INIT:
 		{
-			static bool bFirstRunPause = true;
-			if (bFirstRunPause)
-			{
-				if (GetKey(olc::Key::SPACE).bReleased)
-					bFirstRunPause = false;
+			//static bool bFirstRunPause = true;
+			//if (bFirstRunPause)
+			//{
+			//	if (GetKey(olc::Key::SPACE).bReleased)
+			//		bFirstRunPause = false;
 
-				return true;
-			}
+			//	return true;
+			//}
 
 			// Run the splash screen sequence until finished before executing the rest of the program code
 			if (splashScreen.AnimateSplashScreen(fElapsedTime))
