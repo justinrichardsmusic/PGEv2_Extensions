@@ -2,7 +2,7 @@
 olcPGEX extenstions that I find useful and I think might be useful to others
 
 You can see a short demo of them all in use here: https://youtu.be/GbyLmkikm30
-(Driver Unhinged Alpha Demo Footage)
+(Driver Unhinged Alpha Demo Footage) ~25 seconds into the video
 
 Also a specific demo just for the animator here: https://youtu.be/Fk7rt0563Io
 (olcPGEX_Animator2D Offical Demo)
