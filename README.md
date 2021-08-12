@@ -91,3 +91,11 @@ It's really that simple.
 
 For some example code and more detailed info on what types of animations are supported check
 the comments section of the header file...
+
+
+olcPGEX_ScrollingTile.h
+-----------------------
+
+If you need a tiled backdrop that seems to go forever and ever, then this extension does just
+that.  Draws a tileset that fills the screen and culls what is not visible.  As you move your
+camera around, the tiles will adjust their positions accordingly.
