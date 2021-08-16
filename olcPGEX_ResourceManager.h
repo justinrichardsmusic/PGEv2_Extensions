@@ -168,7 +168,7 @@ void olcPGEX_ResourceManager::RM_FreeSpriteData(std::string spriteFileName)
 			if (s.spr == nullptr)
 				strError = "ERROR: RM_FreeSpriteData - Sprite Data Not Found";
 			else
-				s.spr->~Sprite();
+				delete s.spr;
 
 			return;
 		}
@@ -186,7 +186,7 @@ void olcPGEX_ResourceManager::RM_FreeSpriteData(int fileNameID)
 			if (s.spr == nullptr)
 				strError = "ERROR: RM_FreeSpriteData - Sprite Data Not Found";
 			else
-				s.spr->~Sprite();
+				delete s.spr;
 
 			return;
 		}
