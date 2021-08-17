@@ -484,14 +484,18 @@ void olcPGEX_Animator2D::Pause(std::string name, bool bPaused)
 	for (auto& a : anims)
 		if (a.strName == name)
 			if (a.bIsPlaying)
+			{
 				if (a.bIsPaused)
 					a.bIsPaused = false;
 				else
 					a.bIsPaused = true;
 
+				return;
+			}
 
 	errorMessage = "Unable to pause/resume animation (" + name + ") - not a valid animation name... [Pause]";
 }
+
 
 void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 {
