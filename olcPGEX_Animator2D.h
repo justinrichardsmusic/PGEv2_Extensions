@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                Animator2D - v1.4							  |
+	|                Animator2D - v1.5                            |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -153,6 +153,16 @@
 
 
 
+	-----------------------
+	  v1.5 - NEW FEATURES
+	-----------------------
+
+	Added the ability to Pause and Resume an animation using the Pause() Function.
+	It will pause by default, if you want to resume the animation simply pass 'false'
+	in after the animation name.
+
+
+
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
 
@@ -204,6 +214,7 @@ public:
 		std::string strPlayNext = ""; // v1.1
 
 		bool bIsPlaying = false;
+		bool bIsPaused = false; // v.1.5
 		bool bStopAfterComplete = false;
 		bool bStopNextAfterComplete = false; // v1.1
 		bool bBillboardAnimation = false;
@@ -257,6 +268,7 @@ public:
 	inline bool IsAnyAnimationPlaying();
 	inline void Stop(std::string name, bool bAfterCompletion = false);
 	inline void StopAll();
+	inline void Pause(std::string name, bool bPaused = true); // v1.5
 	inline void UpdateAnimations(float fElapsedTime);
 
 	inline void DrawAnimationFrame(olc::vf2d pos, float angle = 0.0f);
@@ -377,7 +389,8 @@ void olcPGEX_Animator2D::SetNextAnimation(std::string animName, std::string next
 olcPGEX_Animator2D::Animation* olcPGEX_Animator2D::GetAnim(std::string name)
 {
 	for (auto& a : anims)
-		if (a.strName == name) return &a;
+		if (a.strName == name)
+			return &a;
 
 	errorMessage = "Unable to get animation (" + name + ") - not a valid animation name... [GetAnim]";
 	return nullptr;
@@ -389,6 +402,7 @@ void olcPGEX_Animator2D::Play(std::string name, bool bPlayOnce, int startFrame)
 		if (a.strName == name)
 		{
 			a.bIsPlaying = true;
+			a.bIsPaused = false;
 
 			// Prevent starting on an invalid frame
 			if (a.fPlayAfterSeconds == -1.0f)
@@ -447,6 +461,8 @@ void olcPGEX_Animator2D::Stop(std::string name, bool bAfterCompletion)
 			else
 			{
 				a.bIsPlaying = false;
+				a.bIsPaused = false;
+
 				if (a.strPlayNext != "")
 					Play(a.strPlayNext, a.bStopNextAfterComplete);
 
@@ -461,6 +477,20 @@ void olcPGEX_Animator2D::StopAll()
 {
 	for (auto& a : anims)
 		Stop(a.strName);
+}
+
+void olcPGEX_Animator2D::Pause(std::string name, bool bPaused)
+{
+	for (auto& a : anims)
+		if (a.strName == name)
+			if (a.bIsPlaying)
+				if (a.bIsPaused)
+					a.bIsPaused = false;
+				else
+					a.bIsPaused = true;
+
+
+	errorMessage = "Unable to pause/resume animation (" + name + ") - not a valid animation name... [Pause]";
 }
 
 void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
@@ -479,7 +509,7 @@ void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 
 		if (a.bIsPlaying && a.fDuration >= 0.0f)
 		{
-			a.fFrameTick += fElapsedTime;
+			if (!a.bIsPaused) a.fFrameTick += fElapsedTime;
 			if (a.fFrameTick > a.fFrameLength)
 			{
 				a.fFrameTick -= a.fFrameTick;
@@ -497,6 +527,8 @@ void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 						if (a.bStopAfterComplete)
 						{
 							a.bIsPlaying = false;
+							a.bIsPaused = false;
+
 							if (a.strPlayNext != "")
 								Play(a.strPlayNext, a.bStopNextAfterComplete);
 						}
@@ -508,6 +540,8 @@ void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 					if (a.bStopAfterComplete)
 					{
 						a.bIsPlaying = false;
+						a.bIsPaused = false;
+
 						if (a.strPlayNext != "")
 							Play(a.strPlayNext, a.bStopNextAfterComplete);
 					}
