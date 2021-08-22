@@ -103,25 +103,25 @@ public:
 
 
 	// Instruct Audio Listener to load this sound (if not loaded already)
-	inline void LoadAudioSample(int ID, const char* fileName);
+	void LoadAudioSample(int ID, const char* fileName);
 
 	// Play the Audio Sample, with given parameters
-	inline void Play(float speed = 1.0f, float vol = 1.0f, bool looping = false, bool paused = false);
+	void Play(float speed = 1.0f, float vol = 1.0f, bool looping = false, bool paused = false);
 
 	// Pause or Un-Pause - maintains the playback position and handle
-	inline void Pause(bool pauseState = true);
+	void Pause(bool pauseState = true);
 
 	// Stop - playback position and handle will be lost
-	inline void Stop();
+	void Stop();
 
 	// Audio Modulation - control the speed of playback
-	inline void ModulateAudio(float minPlaySpeed, float maxPlaySpeed, float modulation, bool precise = false, bool deferred = false);
+	void ModulateAudio(float minPlaySpeed, float maxPlaySpeed, float modulation, bool precise = false, bool deferred = false);
 
 	// Adjust Volume
-	inline void SetVolume(float vol, float minVol = 0.0f, float maxVol = 1.0f);
+	void SetVolume(float vol, float minVol = 0.0f, float maxVol = 1.0f);
 
 	// Set Default Parameters
-	inline void SetDefaults(float speed, float vol, float minVol, float maxVol, bool looping);
+	void SetDefaults(float speed, float vol, float minVol, float maxVol, bool looping);
 };
 
 #ifdef AUDIO_SOURCE_IMPLEMENTATION
