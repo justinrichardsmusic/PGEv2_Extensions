@@ -1,5 +1,5 @@
 /*
-	olcPGEX_AudioListener.h
+	olcPGEX_AudioSource.h
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
