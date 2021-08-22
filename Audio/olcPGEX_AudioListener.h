@@ -174,7 +174,7 @@ public:
 			wav = wavPtr;
 		}
 
-		int nSampleID = GAME2D::AUDIO::NULL_SND; // requires PGE_GAME_2D_Constants.h to be included (or just modify this to suit your own needs...)
+		int nSampleID;
 		SoLoud::Wav* wav;
 	};
 
