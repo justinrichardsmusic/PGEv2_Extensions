@@ -215,6 +215,9 @@ public:
 	inline float GetDistance(olc::vf2d sourcePos, bool returnRoot = true);
 };
 
+#ifdef AUDIO_LISTENER_IMPLEMENTATION
+#undef AUDIO_LISTENER_IMPLEMENTATION
+
 void olcPGEX_AudioListener::AudioSystemInit()
 {
 	// Initialise the SoLoud backend
@@ -269,5 +272,7 @@ float olcPGEX_AudioListener::GetDistance(olc::vf2d sourcePos, bool returnRoot)
 		return abs(sourcePos.x * sourcePos.x - vecPos.x * vecPos.x) + abs(sourcePos.y * sourcePos.y - vecPos.y * vecPos.y);
 
 }
+
+#endif // AUDIO_LISTENER_IMPLEMENTATION
 
 #endif
