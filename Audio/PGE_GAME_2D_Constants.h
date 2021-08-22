@@ -16,6 +16,6 @@ namespace GAME2D
 		TEST_SND, // included for demonstration purposes, can be removed
 
 		// add constants for your game sounds here
-		MENU_MUS,
+		//MENU_MUS,
 	};
 }
