@@ -199,20 +199,20 @@ public:
 
 
 	// Initialise the Audio Engine, and Destroy it when done
-	inline void AudioSystemInit();
-	inline void AudioSystemDestroy();
+	void AudioSystemInit();
+	void AudioSystemDestroy();
 
 	// Load a file and store it in the list of wavs
-	inline void LoadAudioSample(int ID, const char* fileName);
+	void LoadAudioSample(int ID, const char* fileName);
 
 	// Identify a particular Audio Sample based on its ID
-	inline sAudioSample* GetAudioSampleByID(int ID);
+	sAudioSample* GetAudioSampleByID(int ID);
 
 	// Update the spacial position of the Audio Listener
-	inline void UpdatePosition(olc::vf2d pos);
+	void UpdatePosition(olc::vf2d pos);
 
 	// Calculate distance between listener and source
-	inline float GetDistance(olc::vf2d sourcePos, bool returnRoot = true);
+	float GetDistance(olc::vf2d sourcePos, bool returnRoot = true);
 };
 
 #ifdef AUDIO_LISTENER_IMPLEMENTATION
