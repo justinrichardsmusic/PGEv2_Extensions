@@ -124,6 +124,10 @@ public:
 	inline void SetDefaults(float speed, float vol, float minVol, float maxVol, bool looping);
 };
 
+#ifdef AUDIO_SOURCE_IMPLEMENTATION
+#undef AUDIO_SOURCE_IMPLEMENTATION
+
+
 void olcPGEX_AudioSource::LoadAudioSample(int ID, const char* fileName)
 {
 	// Link the IDs together
@@ -216,4 +220,5 @@ void olcPGEX_AudioSource::SetDefaults(float speed, float vol, float minVol, floa
 	bLooping = looping;
 }
 
+#endif // AUDIO_SOURCE_IMPLEMENTATION
 #endif
