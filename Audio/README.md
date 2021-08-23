@@ -105,7 +105,7 @@ You should now be setup for using SoLoud in your PGE project.
 Try to build and run your project, you should not get any errors and it should run at this point
 (although it won't do anything yet...)
 
-Optional - Instructions for building and compiling SoLoud / SDL Backend for Linux environment
+Building and Compiling SoLoud / SDL Backend for Linux environment (Optional)
 ---------------------------------------------------------------------------------------------
 
 Thanks to the hard work of Moros1138 on the discord server for providing detailed (verified)
@@ -186,6 +186,8 @@ this for us (Many Thanks!).
 
 Run the emcompile.bat file from the root folder in your SoLoud directory and it should
 hopefully produce a soloud.o file as a result.  The batch file is located in this repository.
+
+(NOTE: for linux builds use emcompile.sh provided by Moros1138 instead)
 
 Now copy the soloud.o file into your project directory.
 
