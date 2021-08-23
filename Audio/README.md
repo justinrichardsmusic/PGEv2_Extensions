@@ -105,6 +105,17 @@ You should now be setup for using SoLoud in your PGE project.
 Try to build and run your project, you should not get any errors and it should run at this point
 (although it won't do anything yet...)
 
+Optional - Instructions for building and compiling SoLoud / SDL Backend for Linux environment
+---------------------------------------------------------------------------------------------
+
+Thanks to the hard work of Moros1138 on the discord server for providing detailed (verified)
+instructions for getting this working on Linux :-)
+
+https://gist.github.com/Moros1138/f6bc9816f7bc8b1d67a4eb453bd42e31
+
+If you are building for linux please follow the instructions above then continue on once
+successfully completed...
+
 Adding the Audio Listener and Audio Sources to your project
 -----------------------------------------------------------
 
@@ -128,23 +139,23 @@ Great, now we can start using the AudioPGEXs.
 
 In your declarations section add an instance of a listener and a source:
 
-	cAudioListener AL;
-	cAudioSource AS_Test;
+    cAudioListener AL;
+    cAudioSource AS_Test;
 
 In your OnUserCreate function add the following initialisations:
 
-		AL.AudioSystemInit();
-		AS_Test.AL = &AL;
-		AS_Test.LoadAudioSample(0, "./assets/test.wav");
+    AL.AudioSystemInit();
+    AS_Test.AL = &AL;
+    AS_Test.LoadAudioSample(0, "./assets/test.wav");
 
 (This assumes you have an assets folder with a wav file named "test.wav")
 (Also note, web based app paths are CASE SENSITIVE - test.wav != Test.wav)
 
 In the OnUserUpdate function add the following code:
 
-		// Input
-		if (GetKey(olc::Key::P).bPressed)
-        	AS_Test.Play();
+    // Input
+    if (GetKey(olc::Key::P).bPressed)
+    AS_Test.Play();
 
 Now compile and run... when you press the P key, your sound should play!
 
