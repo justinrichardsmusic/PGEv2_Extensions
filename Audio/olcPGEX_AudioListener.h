@@ -20,7 +20,6 @@
 
 	olcPGEX_AudioListener.h      (this file)
 	olcPGEX_AudioSource.h
-	PGE_GAME_2D_Constants.h
 
 	These can be found in the github repo as well...
 
@@ -54,7 +53,6 @@
 
 	Add the following includes underneath your olcPixelGameEngine include
 
-		#include "PGE_GAME_2D_Constants.h"
 		#include "olcPGEX_AudioListener.h"
 		#include "olcPGEX_AudioSource.h"
 
@@ -80,18 +78,25 @@
 	Next we can assign our AudioListener to our AudioSource and load an audio file
 
 		AS_Test.AL = &game.AL;
-		AS_Test.LoadAudioSample(GAME2D::AUDIO::TEST_SND, "./assets/mus/Test.mp3");
+		AS_Test.LoadAudioSample(1, "./assets/mus/Test.mp3");
 
 
 	This assumes you have an MP3 file called "Test.mp3" in the listed folder in your
-	project directory.  Also note the "GAME2D::AUDIO::TEST_SND" label in this example.
-	This is part of an Enum in the PGE_GAME_2D_CONSTANS.h file.  If you haven't included
-	this file then you will get an error here.  This file is included for convenience
-	to assign labels to your sounds in order to keep track of them more easily...
+	project directory.  Also note the ID is set to "1" in this example. It is recommended
+	that you assign labels to your audio files as IDs instead so you can more easily
+	keep track of them. For example
+	
+		enum AUDIO
+		{
+			NULL_SND = 0, // used as a default case
+			TEST_SND = 1,
+			// add other sounds here
+		};
+		
+		AS_Test.LoadAudioSample(TEST_SND, "./assets/mus/Test.mp3");
 
-	(Note: all that is required in the first argument it an integer value, however it is
-	 recommended that you assign names to the integer values (IDs) in order to be able
-	 to keep track of the audio files as it is likely that there will be many of them)
+	This way you can easily refer to your sound without having to remember the integer
+	value you assigned it in the beginning...
 	
 
 	Now all that is left to do is play the sound...
