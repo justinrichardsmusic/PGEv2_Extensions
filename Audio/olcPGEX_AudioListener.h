@@ -191,7 +191,6 @@ public:
 
 	// Global volume settings
 	float fMusicVolume = 0.2f;
-	float fEngineVolume = 0.1f;
 	float fSoundFXVolume = 0.4f;
 
 	bool bMusicOn = true;
