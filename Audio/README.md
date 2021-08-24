@@ -129,18 +129,18 @@ Add the following files to your project:
  
 Below your inclusion of the PGE header in your main.cpp add the following defines and includes:
 
-    #define OLC_PGEX_AUDIO_LISTENER
-    #include "cAudioListener.h"
+    #define AUDIO_LISTENER_IMPLEMENTATION
+    #include "olcPGEX_AudioListener.h"
     
-    #define OLC_PGEX_AUDIO_SOURCE
-    #include "cAudioSource.h"
+    #define AUDIO_SOURCE_IMPLEMENTATION
+    #include "olcPGEX_AudioSource.h"
 
 Great, now we can start using the AudioPGEXs.
 
 In your declarations section add an instance of a listener and a source:
 
-    cAudioListener AL;
-    cAudioSource AS_Test;
+    olcPGEX_AudioListener AL;
+    olcPGEX_AudioSource AS_Test;
 
 In your OnUserCreate function add the following initialisations:
 
@@ -202,11 +202,11 @@ Add the following text to the file:
 Next we need to add the files we wish to compile... assuming your main project file is called "main.cpp" we can use the following
 additional text:
 
-    main.cpp soloud.o cAudioListener.cpp cAudioSource.cpp -o pge.html --preload-file ./assets
+    main.cpp soloud.o -o pge.html --preload-file ./assets
 
 The entire file should now contain the following:
 
-    em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2 main.cpp soloud.o cAudioListener.cpp cAudioSource.cpp -o pge.html --preload-file ./assets
+    em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2 main.cpp soloud.o -o pge.html --preload-file ./assets
     
 This will be our compile command to use with emscripten.  Save the text document and continue.
 
