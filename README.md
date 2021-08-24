@@ -99,3 +99,19 @@ olcPGEX_ScrollingTile.h
 If you need a tiled backdrop that seems to go forever and ever, then this extension does just
 that.  Draws a tileset that fills the screen and culls what is not visible.  As you move your
 camera around, the tiles will adjust their positions accordingly.
+
+
+olcPGEX_Interactable.h
+----------------------
+
+GUIs are famously... well, a pain in the bottom :-(
+
+Every now and then you just need some simple buttons or menus to add to your mini-game and
+creating an entire framework each time becomes tedious and annoying... That is where this
+PGEX comes to the rescue!
+
+Need a button?  Easy...
+Need many buttons?  Also easy...
+Need those many buttons organised into menus of buttons?  You can do that to :-)
+
+Example code is in the comments section of the header.
