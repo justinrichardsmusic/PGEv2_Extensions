@@ -1,3 +1,4 @@
+
 # Install SDL2 development package (MacOS)
 
 ```bash
