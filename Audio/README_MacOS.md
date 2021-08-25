@@ -29,7 +29,7 @@ It should look something like this:
 if (os.is("Windows")) then
 	WITH_WINMM = 1
 elseif (os.is("macosx")) then
-	-- 	WITH_COREAUDIO = 1
+	-- WITH_COREAUDIO = 1
 else
 	-- WITH_ALSA = 1
 	-- WITH_OSS = 1
