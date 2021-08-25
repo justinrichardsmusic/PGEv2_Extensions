@@ -196,7 +196,7 @@ this for us (Many Thanks!).
 Run the emcompile.bat file from the root folder in your SoLoud directory and it should
 hopefully produce a soloud.o file as a result.  The batch file is located in this repository.
 
-(NOTE: for linux builds use emcompile.sh provided by Moros1138 instead)
+(NOTE: for linux or macOS builds use emcompile.sh provided by Moros1138 instead)
 
 Now copy the soloud.o file into your project directory.
 
