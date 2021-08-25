@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                    Interactable v1.0                        |
+	|                    Interactable v1.1                        |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -93,12 +93,15 @@
 	There are a couple of STATIC functions which can be accessed without the
 	need to reference an instance of an interactable.  They are:
 
+		olcPGEX_Interactable::GetInteractableFromGroupByID();
 		olcPGEX_Interactable::SetGroupVisibility();
 		olcPGEX_Interactable::StartTransition();
+		olcPGEX_Interactable::ProcessInteractionFromGroup();
 
 	These can only be used on GROUPS of interactables contained insided a
 	std::vector.  When interactables are grouped correctly it makes transitioning
-	between groups extremely easy.  This is the real advantage of this PGEX as
+	between groups extremely easy and completely removes the need for the
+	complex loop you see above.  This is the real advantage of this PGEX as
 	it saves a lot of time in the long run once you start to add many menu
 	systems into your game...
 
@@ -197,8 +200,10 @@ public:
 	void Update(float fElapsedTime, olc::vi2d mousePos);
 	void Draw();
 
-	static void SetGroupVisibility(std::vector<olcPGEX_Interactable> &group, bool visible = true);
-	static void StartTransition(std::vector<olcPGEX_Interactable>& group, float transitionDirection, float speed = 2.0f);
+	static olcPGEX_Interactable*	GetInteractableFromGroupByID(std::vector<olcPGEX_Interactable>& group, int ID);
+	static void						SetGroupVisibility(std::vector<olcPGEX_Interactable> &group, bool visible = true);
+	static void						StartTransition(std::vector<olcPGEX_Interactable>& group, float transitionDirection, float speed = 2.0f);
+	static int						ProcessInteractionFromGroup(std::vector<olcPGEX_Interactable>& group, float fElapsedTime, olc::vi2d mousePos, bool leftMouseButtonReleased);
 };
 
 
@@ -278,6 +283,18 @@ void olcPGEX_Interactable::Draw()
 	pge->DrawDecal(vecCenterPos - vecDrawSize / 2.0f, decInteractable, { fCurrentZoom, fCurrentZoom }, pTint);
 }
 
+olcPGEX_Interactable* olcPGEX_Interactable::GetInteractableFromGroupByID(std::vector<olcPGEX_Interactable>& group, int ID)
+{
+	for (auto& g : group)
+		if (g.nID == ID)
+			return &g;
+
+	// ID not found
+	std::cout << "ID not found in list of Interactables! [GetInteractableByID]";
+
+	return nullptr;
+}
+
 void olcPGEX_Interactable::SetGroupVisibility(std::vector<olcPGEX_Interactable> &group, bool visible)
 {
 	if (group.size() > 0)
@@ -312,6 +329,34 @@ void olcPGEX_Interactable::StartTransition(std::vector<olcPGEX_Interactable>& gr
 	else
 		std::cout << "Group of Interactables was empty! [StartTransition]";
 
+}
+
+int olcPGEX_Interactable::ProcessInteractionFromGroup(std::vector<olcPGEX_Interactable>& group, float fElapsedTime, olc::vi2d mousePos, bool leftMouseButtonReleased)
+{
+	int nReturnID = -1;
+
+	for (auto& g : group)
+	{
+		if (g.bVisible)																	// Requires Drawing
+		{
+			if (g.bEnabled)																// Requires Updating
+			{
+				g.Update(fElapsedTime, mousePos);
+
+				if (g.fTransitionDirection == GAME2D::NO_TRANSITION)					// Requires Interaction
+				{
+					if (leftMouseButtonReleased && g.bHover)
+					{
+						// Set returnID to corressponding interaction
+						nReturnID = g.nID;
+					}
+				}
+			}
+			g.Draw();
+		}
+	}
+
+	return nReturnID; 
 }
 
 #endif		// Implementation
