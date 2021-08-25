@@ -1,6 +1,5 @@
 # Install SDL2 development package (MacOS)
 
-
 ```bash
 FEEDBACK REQUIRED... I don't have a Mac to know what should go here. If you're a Mac user who knows, please let me know :)
 ```
