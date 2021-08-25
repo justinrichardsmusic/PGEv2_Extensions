@@ -34,8 +34,8 @@ https://sol.gfxile.net/soloud/downloads.html
 Extract them somewhere on your drive so you can access them when needed (they don't need
 to be in your project directory in most situations so keep them separate for now).
 
-Building a Backend
-------------------
+Building a Backend for Windows
+------------------------------
 
 In order to NOT have to include all of the SoLoud source files in our project we will need
 to first build a backend (static library) to include instead.  This will make things much
@@ -55,28 +55,48 @@ web browser also.
 
 (If you don't have SDL2 installed you will need to download and install it somewhere first!)
 (Note: If you aren't intending on building for Emscripten then you can use MiniAudio which
- doesn't require any additional downloads)
+ doesn't require any additional downloads, and skip the SDL2 parts)
 
 Before running the Genie command you will need to first edit the genie.lua file to point to
 where you have your installation of SDL2. For example;
 
     local sdl2_root      = "/libraries/sdl2/"
+    local sdl2_lib_x86   = "/libraries/sdl2/lib/x86/"
+    local sdl2_lib_x64   = "/libraries/sdl2/lib/x64/"
 
 Save the lua file and return to the command prompt.
 
-Now run Genie again as follows (for Windows using vs2019)
+Now run Genie again as follows (for Windows using vs2019) - SDL2 BACKEND
 
     genie --with-sdl2static-only vs2019
+    
+-or-
+
+Run Genie as follows (for Windows using vs2019) - MINIAUDIO BACKEND (not for use with Emscripten!)
+
+    genie --with-miniaudio-only vs2019
 
 This will generate the necessary project files in the build directory in a new \vs2019
 directory.
 
-Now open the "SoloudStatic.vcxproj" in Visual Studio.  Set it to Release Mode and build the
+Now open the "SoloudStatic.vcxproj" in Visual Studio.  Set it to Release Mode (x86) and build the
 static version (right click the soloudStatic project and select Build).  You should now
 see a \lib folder in the main SoLoud directory. This will now contain the soloud_static.lib
 file.  This is the file that will be needed as a replacement for the SoLoud source code.
 
 (Note: x86 build confirmed working, x64 may not be compatible at this stage)
+
+Building and Compiling SoLoud / SDL Backend for Linux or MacOS environment (Optional)
+---------------------------------------------------------------------------------------------
+
+Thanks to the hard work of Moros1138 and Xylit on the discord server for providing detailed (verified)
+instructions for getting this working on Linux and MacOS :-)
+
+If you are building for linux please follow the instructions in the Readme_Linux.md file in this repo
+instead of the Windows version above and then continue on once successfully completed...
+
+If you are building for MacOS please follow the instructions in the Readme_MacOS.md file in this repo
+instead of the Windows version above and then continue on once successfully completed...
 
 Configuring Visual Studio for Desktop Use with SoLoud
 -----------------------------------------------------
@@ -104,17 +124,6 @@ You should now be setup for using SoLoud in your PGE project.
 
 Try to build and run your project, you should not get any errors and it should run at this point
 (although it won't do anything yet...)
-
-Building and Compiling SoLoud / SDL Backend for Linux environment (Optional)
----------------------------------------------------------------------------------------------
-
-Thanks to the hard work of Moros1138 on the discord server for providing detailed (verified)
-instructions for getting this working on Linux :-)
-
-https://gist.github.com/Moros1138/f6bc9816f7bc8b1d67a4eb453bd42e31
-
-If you are building for linux please follow the instructions above then continue on once
-successfully completed...
 
 Adding the Audio Listener and Audio Sources to your project
 -----------------------------------------------------------
@@ -209,6 +218,9 @@ The entire file should now contain the following:
     em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2 main.cpp soloud.o -o pge.html --preload-file ./assets
     
 This will be our compile command to use with emscripten.  Save the text document and continue.
+
+(For linux and MacOS - please refer to the compile instructions in the readme_linux / readme_macOS files in
+this repo instead)
 
 Compiling with Emscripten for Web
 ---------------------------------
