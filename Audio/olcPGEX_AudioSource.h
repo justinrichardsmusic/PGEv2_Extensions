@@ -146,7 +146,7 @@ void olcPGEX_AudioSource::Play(float speed, float vol, bool looping, bool paused
 	bPaused = paused;
 
 	// Assign a handle to this instance of the sound we are about to play
-	handle = AL->soloud.play(*AL->GetAudioSampleByID(nID)->wav, fVolume, 1.0f, bPaused);
+	handle = AL->soloud.play(*AL->GetAudioSampleByID(nID)->wav, fVolume, 0.0f, bPaused);
 
 	// Set speed and looping 
 	AL->soloud.setRelativePlaySpeed(handle, fPlaySpeed);
