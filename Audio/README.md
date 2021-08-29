@@ -113,12 +113,18 @@ Under C/C++ in the Additional Include Directories field, add in the location of 
 SoLoud \include folder.  This will allow the Audio Listener to access the SoLoud header
 information.
 
-Under Linker/Input in the Additional Dependencies field, add in "soloud_static.lib;". This
-will link the compiled soloud library at runtime.
+Under Linker/Input in the Additional Dependencies field, add in 
+
+        soloud_static.lib; sdl2.lib; sdl2main.lib; sdl2_mixer.lib;
+        
+This will link the compiled soloud library at runtime as well as the various sdl libraries
+needed for desktop development.
 
 However, we still need to place a copy of the soloud_static.lib file in our project directory.
 Copy the library file from your SoLoud installation over to your project directory (usually
 the same directory as your main.cpp file).
+
+And don't forget to add the SDL libraries listed above as well (my bad, thanks tgd from the discord)
 
 You should now be setup for using SoLoud in your PGE project.
 
@@ -183,6 +189,9 @@ will need to copy the headers inside the SoLoud \include folder into our project
 
 We also need the soloud_static.lib file which should already be in the project folder (just
 mentioning it in case it isn't)
+
+(Note - the SDL library files are not needed to compile for emscripten, but if you intend to
+test in a desktop environment you will still need them)
 
 Great, that's the first part done :-)
 
