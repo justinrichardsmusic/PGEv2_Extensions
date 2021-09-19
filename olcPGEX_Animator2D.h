@@ -3,13 +3,13 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                Animator2D - v1.5                            |
+	|                Animator2D - v1.1			      |
 	+-------------------------------------------------------------+
 
 	What is this?
 	~~~~~~~~~~~~~
 	This is an extension to the olcPixelGameEngine v2.0 and above.
-
+	
 	Its purpose is to allow quick and simple animation initialisation
 	as well as ease of use with regards to playing, stopping, triggering
 	and asignment to game objects.
@@ -28,10 +28,6 @@
 	Billboard animation which allows for rotation around an origin whilst
 	always displaying the animation 'upright', useful for particle effects
 	or flame etc...
-
-	Ability to flip animation sequences if required, as well as applying
-	a "ping pong" mode in order to cycle backwards and forwards through a
-	single animation if needed...
 
 
 	Limitations:
@@ -109,7 +105,7 @@
 
 
 	-----------------------
-	  v1.1 - NEW FEATURES
+	  v1.1 - NEW FEATURES  
 	-----------------------
 
 	Added ability to set an animation to 'Play Next' after current animation
@@ -117,49 +113,6 @@
 
 	Added 'PlayAfterSeconds' function which allows the playing of a given
 	animation to be delayed by a set amount of time.
-
-
-
-	-----------------------
-	  v1.2 - NEW FEATURES
-	-----------------------
-
-	Added Ping Pong animations (traverse frames forwards, then backwards)
-	Added ability to play flipped animations
-
-
-
-	-----------------------
-	  v1.3 - NEW FEATURES
-	-----------------------
-
-	Renamed "Flipped" animations to "PlayInReverse" as they do just that and
-	don't actually flip the image in any way... still useful to play animations
-	backwards...
-
-	Added MirroredImage as an option (proper flipping along either (or both) axis)...
-
-
-
-	-----------------------
-	  v1.4 - NEW FEATURES
-	-----------------------
-
-	Added two new functions ScaleAnimation and TintAnimation.  You can now scale
-	and tint any individual animation in the list of animations on each animator
-	controller.  The scaling will work with rotation around the origin set for the
-	animation which means you don't have to adjust any of these in order to scale
-	a rotated animation :-)
-
-
-
-	-----------------------
-	  v1.5 - NEW FEATURES
-	-----------------------
-
-	Added the ability to Pause and Resume an animation using the Pause() Function.
-	It will pause by default, if you want to resume the animation simply pass 'false'
-	in after the animation name.
 
 
 
@@ -205,6 +158,8 @@
 #ifndef OLC_PGEX_ANIMATOR
 #define OLC_PGEX_ANIMATOR
 
+#include "olcPixelGameEngine.h"
+
 class olcPGEX_Animator2D : public olc::PGEX
 {
 public:
@@ -214,18 +169,17 @@ public:
 		std::string strPlayNext = ""; // v1.1
 
 		bool bIsPlaying = false;
-		bool bIsPaused = false; // v.1.5
+		bool bWasPlaying = false;
 		bool bStopAfterComplete = false;
 		bool bStopNextAfterComplete = false; // v1.1
 		bool bBillboardAnimation = false;
-		bool bPlayInReverse = false; // v1.2 (updated v1.3)
-		bool bPingPong = false; // v1.2
+
+		bool JustFinished() { return !bIsPlaying && bWasPlaying; }
 
 		float fDuration = -1.0f;
 		int nNumberOfFrames;
 		float fFrameLength = 0.0f;
 		int nCurrentFrame = 0;
-		int nFrameIncrement = 1;
 		float fFrameTick = 0.0f;
 		float fPlayAfterSeconds = 0.0f; // v1.1
 
@@ -235,9 +189,6 @@ public:
 		olc::vf2d vecFrameDisplayOffset = { 0.0f, 0.0f };
 		olc::vf2d vecOrigin = { 0.0f, 0.0f };
 		olc::vf2d vecNoRotationPos = { 0.0f, 0.0f };
-		olc::vf2d vecMirrorImage = { 0.0f, 0.0f }; // v1.3 - set either axis or both to -1.0f to mirror the sprite image
-		olc::vf2d vecScale = { 1.0f, 1.0f }; // v1.4
-		olc::Pixel pTint = olc::WHITE; // v1.4
 
 		olc::Decal* decAnimDecal = nullptr;
 	};
@@ -246,41 +197,37 @@ private:
 	std::vector<Animation> anims;
 
 public:
+
 	std::string errorMessage = ""; // you can access the last recorded error message from your parent classes in order to troubleshoot animation errors
 
 	// Add a standard animation that can rotate around an origin (default)
-	inline void AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin = { 0.0f, 0.0f }, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
+	inline void AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin = { 0.0f, 0.0f }, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true);
 
 
 	// Add an animation that does not play by default, used for manually switching between frames on demand (ie switching between items on a HUD...)
-	inline void AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
+	inline void AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite = true);
 
 
 	// Add an animation that can rotate around an origin, but will always display upright (ie particle effects, flame, etc...)
-	inline void AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true, bool playInReverse = false, bool pingpong = false, olc::vf2d mirrorImage = { 0.0f, 0.0f });
-
+	inline void AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset = { 0.0f, 0.0f }, bool horizontalSprite = true);
+	
 
 	inline void SetNextAnimation(std::string animName, std::string nextAnimName, bool bPlayOnce = false); // v1.1
 	inline Animation* GetAnim(std::string name);
 
 	inline void Play(std::string name, bool bPlayOnce = false, int startFrame = 0);
 	inline void PlayAfterSeconds(std::string name, float seconds, bool bPlayOnce = false, int startFrame = 0); // v1.1
-	inline bool IsAnyAnimationPlaying();
 	inline void Stop(std::string name, bool bAfterCompletion = false);
 	inline void StopAll();
-	inline void Pause(std::string name, bool bPaused = true); // v1.5
 	inline void UpdateAnimations(float fElapsedTime);
 
-	inline void DrawAnimationFrame(olc::vf2d pos, float angle = 0.0f);
-
-	inline void ScaleAnimation(std::string animToScale, olc::vf2d scale);
-	inline void TintAnimation(std::string animToTint, olc::Pixel tint);
+	inline void DrawAnimationFrame(olc::vf2d pos, float angle, olc::vf2d scale);
 
 private:
 	inline bool DuplicateAnimationExists(std::string name);
 };
 
-void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
+void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin, olc::vf2d frameDisplayOffset, bool horizontalSprite)
 {
 	// Prevent multiple animations with the same name
 	if (!DuplicateAnimationExists(animName)) return;
@@ -295,23 +242,20 @@ void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int 
 
 	newAnim.vecFramePos = firstFramePos;
 	newAnim.vecFrameSize = frameSize;
-	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
+		newAnim.vecNextFrameOffset = { frameSize.x, 0.0f };
 	else
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
+		newAnim.vecNextFrameOffset = { 0.0f, frameSize.y };
 
 	newAnim.vecFrameDisplayOffset = frameDisplayOffset;
 	newAnim.vecOrigin = origin;
 	newAnim.decAnimDecal = decal;
-	newAnim.bPingPong = pingpong;
-	newAnim.vecMirrorImage = mirrorImage;
 
 	anims.push_back(newAnim);
 }
 
-void olcPGEX_Animator2D::AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
+void olcPGEX_Animator2D::AddStaticAnimation(std::string animName, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d nextFrameOffset, bool horizontalSprite)
 {
 	// Prevent multiple animations with the same name
 	if (!DuplicateAnimationExists(animName)) return;
@@ -324,23 +268,19 @@ void olcPGEX_Animator2D::AddStaticAnimation(std::string animName, int numFrames,
 
 	newAnim.vecFramePos = firstFramePos;
 	newAnim.vecFrameSize = frameSize;
-	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
+		newAnim.vecNextFrameOffset = { frameSize.x, 0.0f };
 	else
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
-
+		newAnim.vecNextFrameOffset = { 0.0f, frameSize.y };
 
 	newAnim.vecNextFrameOffset = nextFrameOffset;
 	newAnim.decAnimDecal = decal;
-	newAnim.bPingPong = pingpong;
-	newAnim.vecMirrorImage = mirrorImage;
 
 	anims.push_back(newAnim);
 }
 
-void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
+void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d frameDisplayOffset, bool horizontalSprite)
 {
 	// Prevent multiple animations with the same name
 	if (!DuplicateAnimationExists(animName)) return;
@@ -355,19 +295,16 @@ void olcPGEX_Animator2D::AddBillboardAnimation(std::string animName, float durat
 
 	newAnim.vecFramePos = firstFramePos;
 	newAnim.vecFrameSize = frameSize;
-	newAnim.bPlayInReverse = playInReverse;
 
 	if (horizontalSprite)
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(-frameSize.x, 0.0f) : olc::vf2d(frameSize.x, 0.0f);
+		newAnim.vecNextFrameOffset = { frameSize.x, 0.0f };
 	else
-		newAnim.vecNextFrameOffset = newAnim.bPlayInReverse ? olc::vf2d(0.0f, -frameSize.y) : olc::vf2d(0.0f, frameSize.y);
+		newAnim.vecNextFrameOffset = { 0.0f, frameSize.y };
 
 	newAnim.vecFrameDisplayOffset = frameDisplayOffset;
 	newAnim.decAnimDecal = decal;
 
 	newAnim.bBillboardAnimation = true;
-	newAnim.bPingPong = pingpong;
-	newAnim.vecMirrorImage = mirrorImage;
 
 	anims.push_back(newAnim);
 }
@@ -389,8 +326,7 @@ void olcPGEX_Animator2D::SetNextAnimation(std::string animName, std::string next
 olcPGEX_Animator2D::Animation* olcPGEX_Animator2D::GetAnim(std::string name)
 {
 	for (auto& a : anims)
-		if (a.strName == name)
-			return &a;
+		if (a.strName == name) return &a;
 
 	errorMessage = "Unable to get animation (" + name + ") - not a valid animation name... [GetAnim]";
 	return nullptr;
@@ -402,7 +338,6 @@ void olcPGEX_Animator2D::Play(std::string name, bool bPlayOnce, int startFrame)
 		if (a.strName == name)
 		{
 			a.bIsPlaying = true;
-			a.bIsPaused = false;
 
 			// Prevent starting on an invalid frame
 			if (a.fPlayAfterSeconds == -1.0f)
@@ -417,7 +352,6 @@ void olcPGEX_Animator2D::Play(std::string name, bool bPlayOnce, int startFrame)
 			}
 
 			a.fFrameTick = 0.0f;
-			a.nFrameIncrement = 1;
 
 			return;
 		}
@@ -440,14 +374,6 @@ void olcPGEX_Animator2D::PlayAfterSeconds(std::string name, float seconds, bool 
 	errorMessage = "Unable to play animation (" + name + ") - not a valid animation name... [PlayAfterSeconds]";
 }
 
-bool olcPGEX_Animator2D::IsAnyAnimationPlaying()
-{
-	for (auto& a : anims)
-		if (a.bIsPlaying) return true;
-
-	return false;
-}
-
 void olcPGEX_Animator2D::Stop(std::string name, bool bAfterCompletion)
 {
 	for (auto& a : anims)
@@ -461,8 +387,6 @@ void olcPGEX_Animator2D::Stop(std::string name, bool bAfterCompletion)
 			else
 			{
 				a.bIsPlaying = false;
-				a.bIsPaused = false;
-
 				if (a.strPlayNext != "")
 					Play(a.strPlayNext, a.bStopNextAfterComplete);
 
@@ -479,28 +403,12 @@ void olcPGEX_Animator2D::StopAll()
 		Stop(a.strName);
 }
 
-void olcPGEX_Animator2D::Pause(std::string name, bool bPaused)
-{
-	for (auto& a : anims)
-		if (a.strName == name)
-			if (a.bIsPlaying)
-			{
-				if (a.bIsPaused)
-					a.bIsPaused = false;
-				else
-					a.bIsPaused = true;
-
-				return;
-			}
-
-	errorMessage = "Unable to pause/resume animation (" + name + ") - not a valid animation name... [Pause]";
-}
-
-
 void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 {
 	for (auto& a : anims)
 	{
+		a.bWasPlaying = a.bIsPlaying;
+
 		if (a.fPlayAfterSeconds > 0.0f)
 		{
 			a.fPlayAfterSeconds -= fElapsedTime;
@@ -513,46 +421,19 @@ void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 
 		if (a.bIsPlaying && a.fDuration >= 0.0f)
 		{
-			if (!a.bIsPaused) a.fFrameTick += fElapsedTime;
+			a.fFrameTick += fElapsedTime;
 			if (a.fFrameTick > a.fFrameLength)
 			{
 				a.fFrameTick -= a.fFrameTick;
-				a.nCurrentFrame += a.nFrameIncrement;
+				a.nCurrentFrame++;
 				if (a.nCurrentFrame == a.nNumberOfFrames)
 				{
-					if (a.bPingPong)
-					{
-						a.nCurrentFrame--;
-						a.nFrameIncrement = -1;
-					}
-					else
-					{
-						a.nCurrentFrame = 0;
-						if (a.bStopAfterComplete)
-						{
-							a.bIsPlaying = false;
-							a.bIsPaused = false;
-
-							if (a.strPlayNext != "")
-								Play(a.strPlayNext, a.bStopNextAfterComplete);
-						}
-					}
-				}
-
-				if (a.bPingPong && a.nCurrentFrame == 0)
-				{
+					a.nCurrentFrame = 0;
 					if (a.bStopAfterComplete)
 					{
 						a.bIsPlaying = false;
-						a.bIsPaused = false;
-
 						if (a.strPlayNext != "")
 							Play(a.strPlayNext, a.bStopNextAfterComplete);
-					}
-					else
-					{
-						a.nCurrentFrame++;
-						a.nFrameIncrement = 1;
 					}
 				}
 			}
@@ -560,7 +441,7 @@ void olcPGEX_Animator2D::UpdateAnimations(float fElapsedTime)
 	}
 }
 
-void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
+void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle, olc::vf2d scale = {1.0f, 1.0f})
 {
 	for (auto& a : anims)
 		if (a.bIsPlaying)
@@ -570,8 +451,8 @@ void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
 			if (a.bBillboardAnimation)
 			{
 				// translate pos based on rotation around origin
-				float s = angle == 0.0f ? 0.0f : sinf(angle);
-				float c = angle == 0.0f ? 1.0f : cosf(angle);
+				float s = sinf(angle);
+				float c = cosf(angle);
 
 				olc::vf2d vecBillboardPos;
 
@@ -579,13 +460,13 @@ void olcPGEX_Animator2D::DrawAnimationFrame(olc::vf2d pos, float angle)
 				vecBillboardPos.y = s * a.vecFrameDisplayOffset.x + c * a.vecFrameDisplayOffset.y + a.vecOrigin.y;
 
 				// offset to account for frame size
-				vecBillboardPos.x -= a.vecFrameSize.x * 0.5f * a.vecScale.x;
-				vecBillboardPos.y -= a.vecFrameSize.y * a.vecScale.y;
+				vecBillboardPos.x -= a.vecFrameSize.x * 0.5f;
+				vecBillboardPos.y -= a.vecFrameSize.y;
 
-				pge->DrawPartialDecal(pos + vecBillboardPos + (-a.vecMirrorImage * a.vecFrameSize), a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f * a.vecScale.x : 1.0f * a.vecScale.x, a.vecMirrorImage.y < 0.0f ? -1.0f * a.vecScale.y : 1.0f * a.vecScale.y }, a.pTint);
+				pge->DrawPartialDecal(pos + vecBillboardPos, a.decAnimDecal, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize);
 			}
 			else
-				pge->DrawPartialRotatedDecal(pos, a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset * a.vecScale, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, { a.vecMirrorImage.x < 0.0f ? -1.0f * a.vecScale.x : 1.0f * a.vecScale.x, a.vecMirrorImage.y < 0.0f ? -1.0f * a.vecScale.y : 1.0f * a.vecScale.y }, a.pTint);
+				pge->DrawPartialRotatedDecal(pos, a.decAnimDecal, angle, a.vecOrigin - a.vecFrameDisplayOffset, a.vecFramePos + (a.vecNextFrameOffset * a.nCurrentFrame), a.vecFrameSize, scale);
 		}
 }
 
@@ -600,16 +481,5 @@ bool olcPGEX_Animator2D::DuplicateAnimationExists(std::string name)
 
 	return true;
 }
-
-void olcPGEX_Animator2D::ScaleAnimation(std::string animToScale, olc::vf2d scale)
-{
-	auto& a = GetAnim(animToScale)->vecScale = scale;
-}
-
-void olcPGEX_Animator2D::TintAnimation(std::string animToTint , olc::Pixel tint)
-{
-	auto& a = GetAnim(animToTint)->pTint = tint;
-}
-
 
 #endif
