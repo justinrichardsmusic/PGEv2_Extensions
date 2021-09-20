@@ -292,7 +292,7 @@ public:
 	inline void			TintAnimation			(std::string animToTint, olc::Pixel tint);
 
 private:
-	inline bool			DuplicateAnimationExists(std::string name);
+	inline bool			DuplicateAnimationExists	(std::string name);
 };
 
 void olcPGEX_Animator2D::AddAnimation(std::string animName, float duration, int numFrames, olc::Decal* decal, olc::vf2d firstFramePos, olc::vf2d frameSize, olc::vf2d origin, olc::vf2d frameDisplayOffset, bool horizontalSprite, bool playInReverse, bool pingpong, olc::vf2d mirrorImage)
