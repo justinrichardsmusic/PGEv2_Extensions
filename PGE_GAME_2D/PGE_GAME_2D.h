@@ -1,3 +1,123 @@
+/*
+	PGE_GAME_2D.h
+
+	+-------------------------------------------------------------+
+	|    OneLoneCoder Pixel Game Engine - Framework Extension     |
+	|                    PGE_GAME_2D v1.0                         |
+	+-------------------------------------------------------------+
+
+	What is this?
+	~~~~~~~~~~~~~
+	This is a framework extension to the olcPixelGameEngine v2.16
+	and above.
+	
+	It is, put simply, a way to implement ALL of my pixel game engine
+	extensions into your project and have the default behaviours
+	implemented for you.
+	
+	That said, you will of course need to have a copy of my latest
+	PGEXs versions downloadable from my github here:
+	
+		https://github.com/justinrichardsmusic/PGEv2_Extensions
+		
+	The current list of extensions needed are as follows:
+	
+		olcPGEX_ResourceManager.h
+		olcPGEX_SplashScreen.h
+		olcPGEX_Camera2D.h
+		olcPGEX_Animator2D.h
+		olcPGEX_RayCast2D.h"
+		olcPGEX_ScrollingTile.h
+		olcPGEX_Interactable.h
+		olcPGEX_Transition.h
+		
+		olcPGEX_AudioListener.h
+		olcPGEX_AudioSource.h
+		
+	(NOTE) The AudioListener and AudioSource are only required if you
+	intend to use audio in your project, otherwise they may cause
+	compilation errors in some environments.
+	
+	(ADDITIONAL NOTE) You do not need to include ANY of these files
+	in your main project, the PGE_GAME_2D_BACKEND will take care of
+	all the necessary includes.
+	
+	
+	What does it do?
+	~~~~~~~~~~~~~~~~
+	Simplifies the setup required to perform common game engine tasks.
+	
+	For example, games usually need a menu, a camera, animations, a
+	splash screen, audio, screen transitions, raycasting, state machines,
+	etc... All of these things are accessible via the GAME2D namespace
+	making the organisation and use of them extremely quick and easy.
+
+
+	How do I use it?
+	~~~~~~~~~~~~~~~~
+	Create an empty c++ project and add the following files (all found
+	in this GitHub repository, except for the olcPixelGameEngine of
+	course...)
+	
+		olcPixelGameEngine.h
+		PGE_GAME_2D.h
+		PGE_GAME_2D_Constants.h
+		
+		MAIN.cpp
+		PGE_GAME_2D_Constants.cpp
+	
+	(NOTE) If you are using AUDIO you need to follow the linker
+	instructions found in the Readme file in that repository.
+	
+	(ADDITIONAL NOTE) If you intend to compile for emscripten
+	you should change your compiler settings to C++17 standard.
+	
+	Now just compile and run (x86 confirmed working).  The example
+	program only displays a splash screen and nothing more, however
+	the PGE_GAME_2D_BACKEND is running and you are now ready to 
+	add your own code and get cracking on making a game!
+	
+	
+
+	License (OLC-3)
+	~~~~~~~~~~~~~~~
+
+	Copyright 2018 - 2019 OneLoneCoder.com
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+
+	1. Redistributions or derivations of source code must retain the above
+	copyright notice, this list of conditions and the following disclaimer.
+
+	2. Redistributions or derivative works in binary form must reproduce
+	the above copyright notice. This list of conditions and the following
+	disclaimer must be reproduced in the documentation and/or other
+	materials provided with the distribution.
+
+	3. Neither the name of the copyright holder nor the names of its
+	contributors may be used to endorse or promote products derived
+	from this software without specific prior written permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+	A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+	HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+	SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+	LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+	THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+	Author
+	~~~~~~
+	Justin Richards
+
+*/
+
 #pragma once
 
 #include "olcPixelGameEngine.h"
@@ -39,10 +159,10 @@ namespace GAME2D
 
 		// PGEX
 		olcPGEX_ResourceManager				rm{};					// Resource Manager
-		olcPGEX_SplashScreen				splashScreen{};			// Splash Screen
-		olcPGEX_Camera2D					camera{};				// 2D camera
-		olcPGEX_ScrollingTile				scrollingTile{};		// Scrolling Tile
-		std::vector<olcPGEX_Transition>		transitions{};			// Transitions
+		olcPGEX_SplashScreen				splashScreen{};				// Splash Screen
+		olcPGEX_Camera2D				camera{};				// 2D camera
+		olcPGEX_ScrollingTile				scrollingTile{};			// Scrolling Tile
+		std::vector<olcPGEX_Transition>			transitions{};				// Transitions
 
 	private:
 		// Backend Variables
@@ -51,20 +171,20 @@ namespace GAME2D
 		bool bUseTransitions =				true;					// Know whether to initialise the transition PGEX
 
 	public:
-		olc::vi2d iScreenSize{};									// Integer version of the screen size
-		olc::vf2d fScreenSize{};									// Floating point version of the screen size
+		olc::vi2d iScreenSize{};								// Integer version of the screen size
+		olc::vf2d fScreenSize{};								// Floating point version of the screen size
 
 		bool bFirstUpdateFrame =			true;					// Is this the first time the update loop has been called?
 		bool bSplashScreenOn =				true;					// Tell the game engine whether the run the splash screen at startup
-		bool bReturnFalseNextFrame =		false;					// Used to safely terminate the OnUserUpdate loop
+		bool bReturnFalseNextFrame =			false;					// Used to safely terminate the OnUserUpdate loop
 
-		int nGameState{};											// Current game state
-		int nNextGameState{};										// Game state to transition to next frame
+		int nGameState{};									// Current game state
+		int nNextGameState{};									// Game state to transition to next frame
 
 		// Audio
 		#ifdef PGE_GAME_WITH_AUDIO
 		olcPGEX_AudioListener				AL{};					// Single instance of an Audio Listener to use throughout the program
-		std::vector<olcPGEX_AudioSource>	AS{};					// Vector of Audio Sources to add game sounds to
+		std::vector<olcPGEX_AudioSource>		AS{};					// Vector of Audio Sources to add game sounds to
 		#endif
 
 		// Decals to display when the game has been won or lost (possibly remove from this header)
@@ -72,8 +192,8 @@ namespace GAME2D
 		olc::Decal* decLose =				nullptr;
 		olc::vf2d vecWinPos{};
 		olc::vf2d vecLosePos{};
-		bool bWon =							false;
-		bool bLost =						false;
+		bool bWon =					false;
+		bool bLost =					false;
 
 	public:
 		// Functions
