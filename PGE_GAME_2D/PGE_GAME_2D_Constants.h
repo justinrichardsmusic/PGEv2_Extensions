@@ -14,41 +14,41 @@
 namespace GAME2D
 {
 	// Defined bool values
-	const bool PGE_GAME_2D_ENABLED		= true;
-	const bool PGE_GAME_2D_DISABLED		= false;
+	const bool PGE_GAME_2D_ENABLED			= true;
+	const bool PGE_GAME_2D_DISABLED			= false;
 
 	const bool FULLSCREEN				= true;
-	const bool WINDOWED					= false;
+	const bool WINDOWED				= false;
 
-	const bool VSYNC_ON					= true;
+	const bool VSYNC_ON				= true;
 	const bool VSYNC_OFF				= false;
 
 	const bool COHESION_ON				= true;
 	const bool COHESION_OFF				= false;
 
-	const bool ENABLED					= true;
-	const bool DISABLED					= false;
+	const bool ENABLED				= true;
+	const bool DISABLED				= false;
 
-	const bool VISIBLE					= true;
+	const bool VISIBLE				= true;
 	const bool INVISIBLE				= false;
 
-	const bool HASFOCUS					= true;
+	const bool HASFOCUS				= true;
 	const bool HASNOFOCUS				= false;
 
-	const bool CENTERED					= true;
+	const bool CENTERED				= true;
 	const bool LEFT_ALIGNED				= false;
 
 	const bool IS_STATIC				= true;
 	const bool IS_NOT_STATIC			= false;
 
-	const bool LOOPING					= true;
+	const bool LOOPING				= true;
 	const bool NOTLOOPING				= false;
 
-	const bool ON						= true;
-	const bool OFF						= false;
+	const bool ON					= true;
+	const bool OFF					= false;
 
 	const bool SPLASH_SCREEN_ON			= true;
-	const bool SPLASH_SCREEN_OFF		= false;
+	const bool SPLASH_SCREEN_OFF			= false;
 
 	const bool SWAP_TILE				= true;
 	const bool DONT_SWAP_TILE			= false;
