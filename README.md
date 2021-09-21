@@ -119,3 +119,15 @@ Example code is in the comments section of the header.
 Below is a link to a short demonstration of it in action:
 
 https://youtu.be/j6k_8xc-UUQ
+
+
+olcPGEX_Transition.h
+--------------------
+
+Switching between game scenes is much smoother when you add a sublte screen transition in
+between...
+
+This PGEX comes out of the box with 3 default transitions (BLACK, WHITE, RED) which you can
+quickly and easily manipulate to suit your in game needs.
+
+Instructions are in the header as per usual :-)
