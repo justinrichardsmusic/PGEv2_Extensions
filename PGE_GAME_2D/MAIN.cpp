@@ -2,7 +2,7 @@
 #include "olcPixelGameEngine.h"
 
 #define PGE_GAME_2D
-#define PGE_GAME_WITH_AUDIO
+//#define PGE_GAME_WITH_AUDIO
 #include "PGE_GAME_2D.h"
 
 
@@ -10,19 +10,16 @@ using namespace GAME2D;
 class GAME_MAIN : public olc::PixelGameEngine, public GAME2D::PGE_GAME_2D_BACKEND
 {
 public:
-	GAME_MAIN()	{ sAppName = "PGE GAME 2D (001)"; }
+	GAME_MAIN()	{ sAppName = "PGE GAME 2D EXAMPLE"; }
 
 private:
-
+	// Declarations
 
 public:
 	bool OnUserCreate() override
 	{
 		// Start the PGE_GAME_2D engine
-		StartGAME2D(ScreenWidth(), ScreenHeight(), SPLASH_SCREEN_ON, "./assets/snd/shotgun.wav");
-
-		// Modify the default SplashScreen options
-		splashScreen.SetOptions(6, 2, 3.0f, 0.0f, olc::BLACK, olc::RED, olc::DARK_RED, olc::DARK_GREY, PGE_GAME_2D_ENABLED);
+		StartGAME2D(ScreenWidth(), ScreenHeight(), SPLASH_SCREEN_ON);
 
 		return true;
 	}
