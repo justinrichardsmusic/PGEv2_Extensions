@@ -158,33 +158,34 @@ namespace GAME2D
 		~PGE_GAME_2D_BACKEND();
 
 		// PGEX
-		olcPGEX_ResourceManager				rm{};					// Resource Manager
-		olcPGEX_SplashScreen				splashScreen{};				// Splash Screen
-		olcPGEX_Camera2D				camera{};				// 2D camera
-		olcPGEX_ScrollingTile				scrollingTile{};			// Scrolling Tile
-		std::vector<olcPGEX_Transition>			transitions{};				// Transitions
+		olcPGEX_ResourceManager				rm{};				// Resource Manager
+		olcPGEX_SplashScreen				splashScreen{};			// Splash Screen
+		olcPGEX_Camera2D				camera{};			// 2D camera
+		olcPGEX_ScrollingTile				scrollingTile{};		// Scrolling Tile
+		std::vector<olcPGEX_Transition>			transitions{};			// Transitions
 
 	private:
 		// Backend Variables
-		float fElapsedTime =				0.0f;					// Cached version of main engine eplapsed time
-		bool bUseScrollingTile =			false;					// Know whether scrolling tile needs to be updated
-		bool bUseTransitions =				true;					// Know whether to initialise the transition PGEX
+		float fElapsedTime =				0.0f;				// Cached version of main engine eplapsed time
+		bool bUseScrollingTile =			false;				// Know whether scrolling tile needs to be updated
+		bool bUseTransitions =				true;				// Know whether to initialise the transition PGEX
 
 	public:
-		olc::vi2d iScreenSize{};								// Integer version of the screen size
-		olc::vf2d fScreenSize{};								// Floating point version of the screen size
+		olc::vi2d iScreenSize{};							// Integer version of the screen size
+		olc::vf2d fScreenSize{};							// Floating point version of the screen size
 
-		bool bFirstUpdateFrame =			true;					// Is this the first time the update loop has been called?
-		bool bSplashScreenOn =				true;					// Tell the game engine whether the run the splash screen at startup
-		bool bReturnFalseNextFrame =			false;					// Used to safely terminate the OnUserUpdate loop
+		bool bFirstUpdateFrame =			true;				// Is this the first time the update loop has been called?
+		bool bSplashScreenOn =				true;				// Tell the game engine whether to run the splash screen at startup
+		bool bReturnFalseNextFrame =			false;				// Used to safely terminate the OnUserUpdate loop
 
-		int nGameState{};									// Current game state
-		int nNextGameState{};									// Game state to transition to next frame
+		int nGameState{};								// Current game state
+		int nNextGameState{};								// Game state to transition to next frame
+		int nTransitionGameState =			NO_TRANSITION_STATE;		// Game state to transition to once a particular transition has finished
 
 		// Audio
 		#ifdef PGE_GAME_WITH_AUDIO
-		olcPGEX_AudioListener				AL{};					// Single instance of an Audio Listener to use throughout the program
-		std::vector<olcPGEX_AudioSource>		AS{};					// Vector of Audio Sources to add game sounds to
+		olcPGEX_AudioListener				AL{};				// Single instance of an Audio Listener to use throughout the program
+		std::vector<olcPGEX_AudioSource>		AS{};				// Vector of Audio Sources to add game sounds to
 		#endif
 
 		// Decals to display when the game has been won or lost (possibly remove from this header)
@@ -199,7 +200,7 @@ namespace GAME2D
 		// Functions
 		void StartGAME2D(int screenWidth, int screenHeight, bool splashScreenOn = true, const char* defaultMenuAudio = "", bool useTransitions = true);
 		void UpdateGAME2D(olc::vf2d cameraPosition, olc::vf2d clampSize = NO_CLAMP);
-		void LateUpdateGAME2D(float elapsedTime);
+		void LateUpdateGAME2D();
 
 		void AddAudioSource(int ID, const char* fileName);
 		bool ForceQuit(bool quit = false);
@@ -208,6 +209,7 @@ namespace GAME2D
 		void SetWinLoseDecals(olc::Decal* win, olc::Decal* lose, bool centered = true, olc::vf2d leftAlignedPos = { 0.0f, 0.0f });
 		void StartScreenTransition(int transitionID, float transitionDirection, float speed = 1.0f);
 		void StopScreenTransition(int transitionID = ALL_TRANSITIONS);
+		bool AnyScreenTransitionHasFinished();
 	};
 
 
@@ -274,6 +276,10 @@ namespace GAME2D
 
 	void PGE_GAME_2D_BACKEND::UpdateGAME2D(olc::vf2d cameraPosition, olc::vf2d clampSize)
 	{
+		// Force Quit if need be
+		if (ForceQuit())
+			bReturnFalseNextFrame = true;
+
 		// Set fElapsedTime here for convenience
 		fElapsedTime = pge->GetElapsedTime();
 
@@ -301,10 +307,17 @@ namespace GAME2D
 		bFirstUpdateFrame = false;
 	}
 
-	void PGE_GAME_2D_BACKEND::LateUpdateGAME2D(float elapsedTime)
+	void PGE_GAME_2D_BACKEND::LateUpdateGAME2D()
 	{
 		// Process and Display Transitions
 		olcPGEX_Transition::ProcessTransitions(transitions, fElapsedTime, fScreenSize);
+
+		// Automate Game State changes when set transitions have finished
+		if (AnyScreenTransitionHasFinished() && nTransitionGameState != NO_TRANSITION_STATE)
+		{
+			nNextGameState = nTransitionGameState;
+			nTransitionGameState = NO_TRANSITION_STATE;
+		}
 
 		// Update state machine
 		nGameState = nNextGameState;
@@ -411,6 +424,16 @@ namespace GAME2D
 			transitions[transitionID].bActive = false;
 
 	}
+
+	bool PGE_GAME_2D_BACKEND::AnyScreenTransitionHasFinished()
+	{
+		for (auto& t : transitions)
+			if (t.bTransitionFinished)
+				return true;
+
+		return false;
+	}
+
 
 	PGE_GAME_2D_BACKEND::~PGE_GAME_2D_BACKEND()
 	{
