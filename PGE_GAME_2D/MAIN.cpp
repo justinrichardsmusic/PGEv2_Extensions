@@ -48,7 +48,7 @@ public:
 			return false;
 
 		// User Initiated Exit
-		if (ForceQuit(GetKey(olc::Key::ESCAPE).bPressed))
+		if (GetKey(olc::Key::ESCAPE).bPressed)
 			bReturnFalseNextFrame = true;
 
 		// First Frame Only
@@ -72,7 +72,7 @@ public:
 		//
 
 		// Perform late update after primary game code is executed
-		LateUpdateGAME2D(fElapsedTime);
+		LateUpdateGAME2D();
 
 		return true;
 	}
