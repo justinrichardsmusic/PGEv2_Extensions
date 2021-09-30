@@ -60,6 +60,7 @@ namespace GAME2D
 
 	// Defined int values
 	const int ALL_TRANSITIONS			= -1;
+	const int NO_TRANSITION_STATE			= -1;
 
 	// Useful vector values
 	const olc::vi2d iVecZero			= { 0, 0 };
@@ -117,11 +118,6 @@ namespace GAME2D
 		BLACK,
 		WHITE,
 		RED,
-	};
-
-	enum COLLECTABLES
-	{
-		DEFAULT_ITEM,
 	};
 
 	// Helper Functions
