@@ -51,9 +51,12 @@
 	successfully compiled the test program you are ready to follow these
 	instructions...
 
-	Add the following includes underneath your olcPixelGameEngine include
+	Add the following defines / includes underneath your olcPixelGameEngine
+	include:
 
+		#define AUDIO_LISTENER_IMPLEMENTATION
 		#include "olcPGEX_AudioListener.h"
+		#define AUDIO_SOURCE_IMPLEMENTATION
 		#include "olcPGEX_AudioSource.h"
 
 	(Order matters here, they must be included exactly as above!)
