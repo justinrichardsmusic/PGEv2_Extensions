@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                    Interactable v1.1                        |
+	|                    Interactable v1.2                        |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -64,9 +64,9 @@
 
 	Next in OnUserUpdate we can construct a loop to test for interactivity:
 
-		if (testButton.bVisible)										// Visible? we need to draw it
+		if (testButton.bVisible)							// Visible? we need to draw it
 		{
-			if (testButton.bEnabled)									// Enabled? we might need to interact with it
+			if (testButton.bEnabled)						// Enabled? we might need to interact with it
 			{
 				testButton.Update(fElapsedTime, GetMousePos());			// Update the UI internals
 
@@ -74,14 +74,14 @@
 				{
 					if (GetMouse(0).bReleased && testButton.bHover)		// Did we click whilst hovering over the interactable?
 					{
-						if (testButton.nID == ntestButtonID)			// This ID test isn't needed in this simple example, but IS needed for vectors of interactables
+						if (testButton.nID == ntestButtonID)		// This ID test isn't needed in this simple example, but IS needed for vectors of interactables
 						{
 							// DO SOMETHING COOL
 						}
 					}
 				}
 
-				testButton.Draw();										// Drawing occurs even when disabled (will be drawn faded and darker)
+				testButton.Draw();						// Drawing occurs even when disabled (will be drawn faded and darker)
 			}
 		}
 
@@ -108,6 +108,14 @@
 	Enjoy!
 
 
+	------------------------
+	  version 1.2 features
+	------------------------
+
+	Added the ability to reposition an existing interactable using the
+	Reposition() function... just provide the new position and optionally
+	a new size as well, otherwise just omit the size parameter and the
+	original size will be retained...
 
 
 	License (OLC-3)
@@ -162,15 +170,16 @@ public:
 	olcPGEX_Interactable() {}
 
 	// Construct this way when using std::vectors
-	olcPGEX_Interactable(int ID, olc::Decal* decal, olc::vf2d pos, olc::vf2d size, bool visible = true, bool enabled = true, float zoomFactor = 1.2f, bool centered = true)
+	olcPGEX_Interactable(int ID, olc::Decal* decal, olc::vf2d pos, olc::vf2d size, bool visible = true, bool enabled = true, float zoomFactor = 1.2f, bool centered = true, bool isStatic = false)
 	{
-		Construct(ID, decal, pos, size, visible, enabled, zoomFactor, centered);
+		Construct(ID, decal, pos, size, visible, enabled, zoomFactor, centered, isStatic);
 	}
 
 	int nID = -1;
 	bool bVisible = true;
 	bool bEnabled = true;
 	bool bToggledOff = false;
+	bool bIsStatic = false;
 	bool bHover = false;
 	bool bIncludeInTransition = true;
 
@@ -196,34 +205,31 @@ private:
 	float fTransitionSpeed = 2.0f;
 
 public:
-	void Construct(int ID, olc::Decal* decal, olc::vf2d pos, olc::vf2d size, bool visible = true, bool enabled = true, float zoomFactor = 1.2f, bool centered = true);
+	void Construct(int ID, olc::Decal* decal, olc::vf2d pos, olc::vf2d size, bool visible = true, bool enabled = true, float zoomFactor = 1.2f, bool centered = true, bool isStatic = false);
 	void Update(float fElapsedTime, olc::vi2d mousePos);
 	void Draw();
+	void Reposition(olc::vf2d newPos, olc::vf2d newSize = { 0.0f, 0.0f });  // v1.2
 
-	static olcPGEX_Interactable*	GetInteractableFromGroupByID(std::vector<olcPGEX_Interactable>& group, int ID);
+	static olcPGEX_Interactable*				GetInteractableFromGroupByID(std::vector<olcPGEX_Interactable> &group, int ID);
 	static void						SetGroupVisibility(std::vector<olcPGEX_Interactable> &group, bool visible = true);
-	static void						StartTransition(std::vector<olcPGEX_Interactable>& group, float transitionDirection, float speed = 2.0f);
-	static int						ProcessInteractionFromGroup(std::vector<olcPGEX_Interactable>& group, float fElapsedTime, olc::vi2d mousePos, bool leftMouseButtonReleased);
+	static void						StartTransition(std::vector<olcPGEX_Interactable> &group, float transitionDirection, float speed = 2.0f);
+	static int						ProcessInteractionFromGroup(std::vector<olcPGEX_Interactable> &group, float fElapsedTime, olc::vi2d mousePos, bool leftMouseButtonReleased);
 };
 
 
 #ifdef INTERACTABLE_IMPLEMENTATION
 #undef INTERACTABLE_IMPLEMENTATION
 
-void olcPGEX_Interactable::Construct(int ID, olc::Decal* decal, olc::vf2d pos, olc::vf2d size, bool visible, bool enabled, float zoomFactor, bool centered)
+void olcPGEX_Interactable::Construct(int ID, olc::Decal* decal, olc::vf2d pos, olc::vf2d size, bool visible, bool enabled, float zoomFactor, bool centered, bool isStatic)
 {
 	nID = ID;
-	vecPos = pos;
-	vecSize = size;
-	vecHalfSize = vecSize / 2.0f;
-	vecCenterPos = vecPos + vecHalfSize;
-
-	vecDrawSize = vecSize;
+	Reposition(pos, size);
 
 	fZoomFactor = zoomFactor;
 	bCentered = centered;
 	bVisible = visible;
 	bEnabled = enabled;
+	bIsStatic = isStatic;
 
 	decInteractable = decal;
 }
@@ -232,26 +238,29 @@ void olcPGEX_Interactable::Update(float fElapsedTime, olc::vi2d mousePos)
 {
 	if (fTransitionDirection == 0)
 	{
-
-		olc::vf2d fMousePos = { (float)mousePos.x, (float)mousePos.y };
-
-		if (fMousePos.x > vecPos.x &&
-			fMousePos.y > vecPos.y &&
-			fMousePos.x < vecPos.x + vecSize.x &&
-			fMousePos.y < vecPos.y + vecSize.y)
+		if (!bIsStatic)
 		{
-			if (fCurrentZoom < fZoomFactor)
-				fCurrentZoom += fElapsedTime * fZoomSpeed;
+			olc::vf2d fMousePos = { (float)mousePos.x, (float)mousePos.y };
 
-			bHover = true;
+			if (fMousePos.x > vecPos.x &&
+				fMousePos.y > vecPos.y &&
+				fMousePos.x < vecPos.x + vecSize.x &&
+				fMousePos.y < vecPos.y + vecSize.y)
+			{
+				if (fCurrentZoom < fZoomFactor)
+					fCurrentZoom += fElapsedTime * fZoomSpeed;
 
-		}
-		else
-		{
-			if (fCurrentZoom > 1.0f)
-				fCurrentZoom -= fElapsedTime * fZoomSpeed;
+				bHover = true;
 
-			bHover = false;
+			}
+			else
+			{
+				if (fCurrentZoom > 1.0f)
+					fCurrentZoom -= fElapsedTime * fZoomSpeed;
+
+				bHover = false;
+			}
+
 		}
 
 		vecDrawSize = vecSize * fCurrentZoom;
@@ -281,6 +290,19 @@ void olcPGEX_Interactable::Draw()
 	if (!bEnabled) pTint = olc::PixelF(0.25f, 0.25f, 0.25f, 0.25f * fCurrentAlpha);
 
 	pge->DrawDecal(vecCenterPos - vecDrawSize / 2.0f, decInteractable, { fCurrentZoom, fCurrentZoom }, pTint);
+}
+
+void olcPGEX_Interactable::Reposition(olc::vf2d newPos, olc::vf2d newSize)
+{
+	vecPos = newPos;
+
+	if (newSize != olc::vf2d{ 0.0f, 0.0f })
+		vecSize = newSize;
+
+	vecHalfSize = vecSize / 2.0f;
+	vecCenterPos = vecPos + vecHalfSize;
+
+	vecDrawSize = vecSize;
 }
 
 olcPGEX_Interactable* olcPGEX_Interactable::GetInteractableFromGroupByID(std::vector<olcPGEX_Interactable>& group, int ID)
@@ -337,9 +359,9 @@ int olcPGEX_Interactable::ProcessInteractionFromGroup(std::vector<olcPGEX_Intera
 
 	for (auto& g : group)
 	{
-		if (g.bVisible)																	// Requires Drawing
+		if (g.bVisible)												// Requires Drawing
 		{
-			if (g.bEnabled)																// Requires Updating
+			if (g.bEnabled)											// Requires Updating
 			{
 				g.Update(fElapsedTime, mousePos);
 
