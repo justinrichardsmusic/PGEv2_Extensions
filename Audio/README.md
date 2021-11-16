@@ -49,6 +49,18 @@ installation.  Now run
 to see a list of the various options you have for backends
 etc...
 
+--------------------------------------------
+
+[NOTE] It has come to my attention that the most recent updates for SoLoud no longer include
+the GENie.exe file... You will now need to download it from the github below (see download
+section of the Readme file there)
+
+https://github.com/bkaradzic/GENie
+
+Once downloaded, place the GENie.exe file in the /build folder specified above and continue on...
+
+---------------------------------------------
+
 You can of course choose one that suits your needs, however I'm going to go with SDL2 as it
 is the most common / tested backend available and it is cross platform and works in the
 web browser also.
