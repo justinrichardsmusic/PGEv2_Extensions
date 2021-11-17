@@ -50,6 +50,7 @@
 // Include the PGEXs found in the 'justinrichardsmusic' github
 #include "olcPGEX_SplashScreen.h"
 #include "olcPGEX_ResourceManager.h"
+#define ANIMATOR_IMPLEMENTATION
 #include "olcPGEX_Animator2D.h"
 
 // Character class to organise the animations and other data our character will need
