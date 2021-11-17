@@ -126,6 +126,7 @@
 #include "olcPGEX_ResourceManager.h"
 #include "olcPGEX_SplashScreen.h"
 #include "olcPGEX_Camera2D.h"
+#define ANIMATOR_IMPLEMENTATION
 #include "olcPGEX_Animator2D.h"
 #include "olcPGEX_RayCast2D.h"
 #include "olcPGEX_ScrollingTile.h"
