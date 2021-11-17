@@ -14,6 +14,7 @@
 
 #include "olcPGEX_SplashScreen.h"
 #include "olcPGEX_ResourceManager.h"
+#define ANIMATOR_IMPLEMENTATION
 #include "olcPGEX_Animator2D.h"
 
 #include "cCharacter.h"
