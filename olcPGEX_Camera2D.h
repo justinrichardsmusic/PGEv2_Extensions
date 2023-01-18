@@ -143,7 +143,7 @@ public:
 	void ClampCamera(const olc::vf2d vecTopLeft, const olc::vf2d vecBottomRight);
 	olc::vf2d ClampVector(const olc::vf2d vecTopLeft, const olc::vf2d vecBottomRight, const olc::vf2d vecOriginalVector);
 
-	void DrawDebugInfo(olc::vi2d screenPos, int textScale);
+	void DrawDebugInfo(olc::vi2d screenPos, int textScale = 1);
 };
 
 #ifdef OLC_PGEX_CAMERA2D_IMPLEMENTATION
@@ -179,7 +179,7 @@ olc::vf2d olcPGEX_Camera2D::ClampVector(const olc::vf2d vecTopLeft, const olc::v
 	return vecAdjustedVector;
 }
 
-void olcPGEX_Camera2D::DrawDebugInfo(olc::vi2d screenPos, int textScale = 1)
+void olcPGEX_Camera2D::DrawDebugInfo(olc::vi2d screenPos, int textScale)
 {
 	UpdateDebugProperties(textScale);
 
