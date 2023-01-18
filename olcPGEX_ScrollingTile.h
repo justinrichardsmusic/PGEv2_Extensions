@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                  Scrolling Tile - v1.0                      |
+	|                  Scrolling Tile - v1.1                      |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -82,16 +82,15 @@ private:
 
 	olc::Decal* decTile = nullptr;
 
-	inline void DrawSingleTile(olc::vi2d screenPos);
+	inline void DrawSingleTile(const olc::vi2d screenPos);
 
 public:
-	inline void SetTileValues(olc::vi2d screenSize, olc::vi2d tileSize, olc::Decal* decal);
-	inline void DrawAllTiles(olc::vf2d camPos);
-
+	inline void SetTileValues(const olc::vi2d screenSize, const olc::vi2d tileSize, olc::Decal* decal);
+	inline void DrawAllTiles(const olc::vf2d camPos);
 };
 
 
-void olcPGEX_ScrollingTile::SetTileValues(olc::vi2d screenSize, olc::vi2d tileSize, olc::Decal* decal)
+void olcPGEX_ScrollingTile::SetTileValues(const olc::vi2d screenSize, const olc::vi2d tileSize, olc::Decal* decal)
 {
 	vecScreenSize = screenSize;
 	vecTileSize = tileSize;
@@ -100,27 +99,26 @@ void olcPGEX_ScrollingTile::SetTileValues(olc::vi2d screenSize, olc::vi2d tileSi
 	vecTilesToDraw = (vecScreenSize / vecTileSize) + olc::vi2d(1, 1);
 }
 
-void olcPGEX_ScrollingTile::DrawSingleTile(olc::vi2d screenPos)
+void olcPGEX_ScrollingTile::DrawSingleTile(const olc::vi2d screenPos)
 {
 	pge->DrawDecal(screenPos, decTile);
 }
 
-void olcPGEX_ScrollingTile::DrawAllTiles(olc::vf2d camPos)
+void olcPGEX_ScrollingTile::DrawAllTiles(const olc::vf2d camPos)
 {
 	vecCurrentOffset.x = (int)camPos.x % vecTileSize.x;
 	vecCurrentOffset.y = (int)camPos.y % vecTileSize.y;
 
+	olc::vi2d screenPos{};
+
 	for (int y = -1; y < vecTilesToDraw.y + 1; y++)
-	{
 		for (int x = -1; x < vecTilesToDraw.x + 1; x++)
 		{
-			olc::vi2d screenPos{};
 			screenPos.x = x * vecTileSize.x - vecCurrentOffset.x;
 			screenPos.y = y * vecTileSize.y - vecCurrentOffset.y;
-
 			DrawSingleTile(screenPos);
 		}
-	}
+
 }
 
-#endif
+#endif		// header guard
