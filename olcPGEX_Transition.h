@@ -3,7 +3,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                Screen Transition - v1.0                     |
+	|                Screen Transition - v1.1                     |
 	+-------------------------------------------------------------+
 
 	What is this?
@@ -19,7 +19,7 @@
 	engine include and remember to also define the implementation as
 	well like shown:
 	
-		#define TRANSITION_IMPLEMENTATION
+		#define OLC_PGEX_TRANSITION_IMPLEMENTATION
 		#include "olcPGEX_Transition.h"
 	
 	Then create a std::vector of transitions to add to in your
@@ -94,13 +94,13 @@
 #ifndef OLC_PGEX_TRANSITION
 #define OLC_PGEX_TRANSITION
 
-#pragma once
 #include "olcPixelGameEngine.h"
 
 class olcPGEX_Transition : public olc::PGEX
 {
 public:
-	olcPGEX_Transition(int ID, olc::Decal* decal, olc::Pixel tint);
+	olcPGEX_Transition() = delete;
+	olcPGEX_Transition(const int ID, olc::Decal* decal, const olc::Pixel tint);
 
 private:
 	olc::Decal* decTransition =				nullptr;
@@ -115,20 +115,20 @@ public:
 	bool bActive =						false;
 
 private:
-	void			UpdateAndDraw			(float elapsedTime, olc::vf2d screenSize);
+	void			i_UpdateAndDraw			(const float elapsedTime, const olc::vf2d screenSize);
 
 public:
-	static void		AddTransitionType		(std::vector<olcPGEX_Transition>& transitionGroup, int ID, olc::Decal* decal, olc::Pixel tint);
+	static void		AddTransitionType		(std::vector<olcPGEX_Transition>& transitionGroup, const int ID, olc::Decal* decal, const olc::Pixel tint);
 	static void		SetDefaultTransitions		(std::vector<olcPGEX_Transition>& transitionGroup, olc::Decal* decal);
-	static void		ProcessTransitions		(std::vector<olcPGEX_Transition>& transitionGroup, float elapsedTime, olc::vf2d screenSize);
+	static void		ProcessTransitions		(std::vector<olcPGEX_Transition>& transitionGroup, const float elapsedTime, const olc::vf2d screenSize);
 	
-	void			StartSingleTransition		(float direction, float speed = 1.0f);
+	void			StartSingleTransition		(const float direction, const float speed = 1.0f);
 };
 
-#ifdef TRANSITION_IMPLEMENTATION
-#undef TRANSITION_IMPLEMENTATION
+#ifdef OLC_PGEX_TRANSITION_IMPLEMENTATION
+#undef OLC_PGEX_TRANSITION_IMPLEMENTATION
 
-olcPGEX_Transition::olcPGEX_Transition(int ID, olc::Decal* decal, olc::Pixel tint)
+olcPGEX_Transition::olcPGEX_Transition(const int ID, olc::Decal* decal, const olc::Pixel tint)
 {
 	nID =				ID;
 	decTransition =			decal;
@@ -136,8 +136,10 @@ olcPGEX_Transition::olcPGEX_Transition(int ID, olc::Decal* decal, olc::Pixel tin
 	fAlpha =			0.0f;
 }
 
-void olcPGEX_Transition::AddTransitionType(std::vector<olcPGEX_Transition>& transitionGroup, int ID, olc::Decal* decal, olc::Pixel tint)
-{ transitionGroup.push_back(olcPGEX_Transition{ ID, decal, tint }); }
+void olcPGEX_Transition::AddTransitionType(std::vector<olcPGEX_Transition>& transitionGroup, const int ID, olc::Decal* decal, const olc::Pixel tint)
+{
+	transitionGroup.emplace_back(olcPGEX_Transition{ ID, decal, tint });
+}
 
 void olcPGEX_Transition::SetDefaultTransitions(std::vector<olcPGEX_Transition>& transitionGroup, olc::Decal* decal)
 {
@@ -146,7 +148,14 @@ void olcPGEX_Transition::SetDefaultTransitions(std::vector<olcPGEX_Transition>& 
 	AddTransitionType(transitionGroup, 2,	decal,		olc::RED);
 }
 
-void olcPGEX_Transition::StartSingleTransition(float direction, float speed)
+void olcPGEX_Transition::ProcessTransitions(std::vector<olcPGEX_Transition>& transitionGroup, const float elapsedTime, const olc::vf2d screenSize)
+{
+	for (auto& t : transitionGroup)
+		t.i_UpdateAndDraw(elapsedTime, screenSize);
+
+}
+
+void olcPGEX_Transition::StartSingleTransition(const float direction, const float speed)
 {
 	fTransitionDirection = direction;
 	fSpeed = speed;
@@ -155,14 +164,7 @@ void olcPGEX_Transition::StartSingleTransition(float direction, float speed)
 	bActive = true;
 }
 
-void olcPGEX_Transition::ProcessTransitions(std::vector<olcPGEX_Transition>& transitionGroup, float elapsedTime, olc::vf2d screenSize)
-{
-	for (auto& t : transitionGroup)
-		t.UpdateAndDraw(elapsedTime, screenSize);
-
-}
-
-void olcPGEX_Transition::UpdateAndDraw(float elapsedTime, olc::vf2d screenSize)
+void olcPGEX_Transition::i_UpdateAndDraw(const float elapsedTime, const olc::vf2d screenSize)
 {
 	if (bActive)
 	{
@@ -191,5 +193,5 @@ void olcPGEX_Transition::UpdateAndDraw(float elapsedTime, olc::vf2d screenSize)
 	}
 }
 
-#endif
-#endif
+#endif				// Implementation Guard
+#endif				// Header Guard
