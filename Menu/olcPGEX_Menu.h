@@ -81,10 +81,10 @@ class olcPGEX_Menu : public olcPGEX_MenuItem
 public:
 	olcPGEX_Menu();
 	olcPGEX_MenuItem*		GetMenuItemByID(const int ID);
-	void					      AddMenuItem(const int ID, olc::Decal* decal, const olc::vf2d pos, const olc::vf2d size, const olc::vf2d sourcePos = { 0.0f, 0.0f }, const bool visible = true, const bool enabled = true, const float zoomFactor = 1.2f, const bool centered = true, const bool isStatic = false);
-	void					      SetMenuVisibility(const bool visible = true);
-	void					      StartTransition(const float transitionDirection, const float speed = 2.0f);
-	int						      ProcessMenuInteractions(const float fElapsedTime, const olc::vi2d mousePos, const bool leftMouseButtonReleased);
+	void				AddMenuItem(const int ID, olc::Decal* decal, const olc::vf2d pos, const olc::vf2d size, const olc::vf2d sourcePos = { 0.0f, 0.0f }, const bool visible = true, const bool enabled = true, const float zoomFactor = 1.2f, const bool centered = true, const bool isStatic = false);
+	void				SetMenuVisibility(const bool visible = true);
+	void				StartTransition(const float transitionDirection, const float speed = 2.0f);
+	int				ProcessMenuInteractions(const float fElapsedTime, const olc::vi2d mousePos, const bool leftMouseButtonReleased);
 
 private:
 	const float NO_TRANSITION = 0.0f;
