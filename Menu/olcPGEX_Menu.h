@@ -24,7 +24,7 @@
 		olcPGEX_MenuItem.cpp
 
 	There is an example.cpp file in my github here:
-	https://github.com/justinrichardsmusic/PGEv2_Extensions/menu
+	https://github.com/justinrichardsmusic/PGEv2_Extensions/blob/master/Menu/example.cpp
 
 	This will explain (and demonstrate) how to use this menu PGEX in your
 	PGE projects. I've also include some basic menu graphics which I created
