@@ -81,43 +81,42 @@ public:
 	olcPGEX_MenuItem();
 	olcPGEX_MenuItem(const int ID, olc::Decal* decal, const olc::vf2d pos, const olc::vf2d size, const olc::vf2d sourcePos = { 0.0f, 0.0f }, const bool visible = true, const bool enabled = true, const float zoomFactor = 1.2f, const bool centered = true, const bool isStatic = false);
 
-	int				    nID =					          -1;
-	bool			    bVisible =				      true;
-	bool			    bEnabled =				      true;
-	bool			    bToggledOff =			      false;
-	bool			    bIsStatic =				      false;
-	bool			    bHover =				        false;
-	bool			    bIncludeInTransition =	true;
+	int			nID =				-1;
+	bool			bVisible =			true;
+	bool			bEnabled =			true;
+	bool			bToggledOff =			false;
+	bool			bIsStatic =			false;
+	bool			bHover =			false;
+	bool			bIncludeInTransition =	        true;
 
-	olc::vf2d		  vecPos					        {};
-	olc::vf2d		  vecSize					        {};
-	olc::vf2d		  vecSourcePos			      {};
+	olc::vf2d		vecPos				{};
+	olc::vf2d		vecSize				{};
+	olc::vf2d		vecSourcePos			{};
 
-	float			    fZoomFactor =			      1.2f;
-	float			    fZoomSpeed =			      1.0f;
-	float			    fTransitionDirection =	0.0f;				// -1.0f transition out, +1.0f transition in, 0.0f no transition
+	float			fZoomFactor =			1.2f;
+	float			fZoomSpeed =			1.0f;
+	float			fTransitionDirection =	        0.0f;		// -1.0f transition out, +1.0f transition in, 0.0f no transition
 
-	olc::Pixel		pTint =					        olc::WHITE;
+	olc::Pixel		pTint =				olc::WHITE;
 
-	olc::vf2d		  vecDrawSize				      {};
-	float			    fCurrentZoom =			    1.0f;
-	float			    fCurrentAlpha =			    1.0f;
-	float			    fTransitionSpeed =		  2.0f;
+	olc::vf2d		vecDrawSize			{};
+	float			fCurrentZoom =			1.0f;
+	float			fCurrentAlpha =			1.0f;
+	float			fTransitionSpeed =		2.0f;
 
 private:
-	olc::Decal*		decMenu =				        nullptr;
+	olc::Decal*		decMenu =			nullptr;
 
-	bool			    bCentered =				      true;
+	bool			bCentered =			true;
 
-	olc::vf2d		  vecCenterPos			      {};
-	olc::vf2d		  vecHalfSize				      {};
+	olc::vf2d		vecCenterPos			{};
+	olc::vf2d		vecHalfSize			{};
 
-	bool			    i_FPointInsideRect(olc::vf2d point, olc::vf2d rPos, olc::vf2d rSize);
+	bool			i_FPointInsideRect(olc::vf2d point, olc::vf2d rPos, olc::vf2d rSize);
 
 public:
-	void			    Construct(const int ID, olc::Decal* decal, const olc::vf2d pos, const olc::vf2d size, const olc::vf2d sourcePos = { 0.0f, 0.0f }, const bool visible = true, const bool enabled = true, const float zoomFactor = 1.2f, const bool centered = true, const bool isStatic = false);
-	void			    Update(const float fElapsedTime, const olc::vi2d mousePos);
-	void			    Draw();
-	void			    Reposition(const olc::vf2d newPos, const olc::vf2d newSize = { 0.0f, 0.0f }, const bool centered = true);
+	void			Construct(const int ID, olc::Decal* decal, const olc::vf2d pos, const olc::vf2d size, const olc::vf2d sourcePos = { 0.0f, 0.0f }, const bool visible = true, const bool enabled = true, const float zoomFactor = 1.2f, const bool centered = true, const bool isStatic = false);
+	void			Update(const float fElapsedTime, const olc::vi2d mousePos);
+	void			Draw();
+	void			Reposition(const olc::vf2d newPos, const olc::vf2d newSize = { 0.0f, 0.0f }, const bool centered = true);
 };
-
