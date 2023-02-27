@@ -1,5 +1,5 @@
 /*
-	olcPGEX_Interactable.h
+	olcPGEX_Interactable.h (DEPRICATED, use olcPGEX_Menu.h instead)
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
