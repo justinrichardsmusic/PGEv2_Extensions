@@ -101,7 +101,7 @@ that.  Draws a tileset that fills the screen and culls what is not visible.  As 
 camera around, the tiles will adjust their positions accordingly.
 
 
-olcPGEX_Interactable.h
+olcPGEX_Menu.h (formally olcPGEX_Interactable.h)
 ----------------------
 
 GUIs are famously... well, a pain in the bottom :-(
