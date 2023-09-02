@@ -243,6 +243,8 @@ This will be our compile command to use with emscripten.  Save the text document
 (For linux and MacOS - please refer to the compile instructions in the readme_linux / readme_macOS files in
 this repo instead)
 
+(If you have many .cpp files in a single directory you can use the command $(Get-ChildItem *.cpp) in place of all of the individual .cpp files to keep things simple / automated)
+
 Compiling with Emscripten for Web
 ---------------------------------
 
