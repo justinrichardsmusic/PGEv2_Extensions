@@ -227,7 +227,7 @@ later on.
 
 Add the following text to the file:
 
-    em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2
+    em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2 -s STACK_SIZE=5MB
     
 Next we need to add the files we wish to compile... assuming your main project file is called "main.cpp" we can use the following
 additional text:
@@ -236,7 +236,7 @@ additional text:
 
 The entire file should now contain the following:
 
-    em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2 main.cpp soloud.o -o pge.html --preload-file ./assets
+    em++ -std=c++17 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 -s USE_SDL_MIXER=2 -s STACK_SIZE=5MB main.cpp soloud.o -o pge.html --preload-file ./assets
     
 This will be our compile command to use with emscripten.  Save the text document and continue.
 
