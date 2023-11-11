@@ -49,6 +49,7 @@
 
 // Include the PGEXs found in the 'justinrichardsmusic' github
 #include "olcPGEX_SplashScreen.h"
+#define OLC_PGEX_RESOURCE_MANAGER_IMPLEMENTATION
 #include "olcPGEX_ResourceManager.h"
 #define ANIMATOR_IMPLEMENTATION
 #include "olcPGEX_Animator2D.h"
